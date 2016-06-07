@@ -1,0 +1,2 @@
+module ScheduleUpdatesHelper
+end

@@ -1,0 +1,9 @@
+instructor:
+  id: 1
+  name: Instructor
+assistant:
+  id: 2
+  name: Assistant
+facilitator:
+  id: 3
+  name: Facilitator

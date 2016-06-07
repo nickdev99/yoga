@@ -1,0 +1,21 @@
+<div id="course_form_container">
+  <ul class="studios_list">
+    <% @providers.each do |p,c| %>
+     <li class="<%= cycle("even", "odd") %>"> 
+      <a href="<%= p.studios.count > 0 ? schedules_path(@city, @region_abbr, p, p.studios.first) :  "#" %>">
+        <span class='name'> 
+          <strong><%= p.name %></strong> 
+        </span> 
+        <% if p.studios.count > 0 %>
+        <span class='address' style='color:#999'><%= p.studios.count == 1 ?  p.studios.last.address : "Multiple Locations" %></span>
+        <% else %>
+        <span class='address' style='color:#999'>No studios</span>
+        <% end %>
+        <span class='operations'> 
+          <img src='/images/phone.gif' width='20' height='20' />
+        </span> 
+      </a> 
+    </li> 
+    <% end %>
+  </ul>
+</div>

@@ -1,0 +1,5 @@
+first:
+  id: 1
+  name: Yoga Downtown
+  provider_id: 1
+  minimum_course_capacity: 10

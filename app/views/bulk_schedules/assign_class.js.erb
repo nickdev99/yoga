@@ -1,0 +1,4 @@
+$('.new_class').html('');
+$('#course_row_<%=@course.week_day%>').html('<div id="course_row_<%=@course.id%>">' + '<%= escape_javascript(render :partial => 'course_row', :locals => {:course => @course})%>' + '</div>');
+shedule_initialize();
+$('#loader_<%=@course.id%>').fadeOut(1000);

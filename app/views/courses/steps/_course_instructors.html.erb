@@ -1,0 +1,67 @@
+<script>
+  $.widget( "custom.catcomplete", $.ui.autocomplete, {
+    _renderMenu: function( ul, items ) {
+      var self = this,
+      currentCategory = '';
+      $.each( items, function( index, item ) {
+        if ( item.category != currentCategory ) {
+          ul.append( "<li><strong>" + item.category + "</strong></li>" );
+          currentCategory = item.category;
+        }
+        self._renderItem( ul, item );
+      });
+    }
+  });
+</script> 
+<script>
+  $(function(){
+    $('#instructor_name').catcomplete({
+      source: '/<%= @city %>/<%= @region_abbr %>/providers/<%=@provider.cached_slug%>/studios/<%=@studio.cached_slug%>/courses/instructor_search',
+      autoFocus: true,
+      select: function(event, ui) {
+        if(ui.item.id != null) {
+          add_instructor(ui.item.id, ui.item.value);
+          $('#course_staff_tba').attr('checked', true);
+        }else{
+          $('#first_name').val($(this).val().split(' ')[0]);
+          $('#last_name').val($(this).val().split(' ')[1]);
+          $('#dialog').dialog('open');
+        }
+      }
+    });
+    $('#dialog').dialog({
+      bgiframe: true,
+      autoOpen: false,
+      modal: true,
+      width: 530
+    });
+  });
+</script>
+
+<fieldset id="course_instructors">
+
+  <legend>Instructors, Assistants, Facilitators</legend>
+
+  <p>
+    <%= text_field_tag :name, nil, :id => :instructor_name -%>
+  <div class="note">Note: Start typing person`s name. Select an auto-suggestion to make your life easier.</div>
+</p>
+
+<div id="new_stuff_member_form" data-url="<%= "/providers/#{@provider.id}/staff_members" %>">
+  <input type="text" class="instructor_first_name" />
+  <input type="text" class="instructor_last_name" />
+  <input type="button" value="Add"/>
+</div>
+<div id="assigned_instructors">
+  <% if course.assignments %>
+    <% course.assignments.each do |a| %>
+  <p class="assigned_instructor" id="assigned_instructor_<%=a.id%>"><%= a.staff_member.name(admin?) %>&emsp;
+    <input id="course_assignments_staff_member_id_<%=a.staff_member.id%>" type="hidden"/>
+    <span><%=link_to 'x', instructor_path(@city, @region_abbr, a.id), :class => 'github', :confirm => 'Are you sure?', :method => :delete, :remote => true%></span></p>
+    <% end %>
+  <% end%>
+</div>
+<p><label><%= f.check_box :staff_tba, {:checked => !course.assignments.blank?} -%> TBA &mdash; to be announced</label></p>
+<p><label><%= f.check_box :rotational_instructor -%> Rotational instructor</label></p>
+<input type="submit" value="Next" />
+</fieldset>

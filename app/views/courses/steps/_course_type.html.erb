@@ -1,0 +1,26 @@
+<fieldset id="course_type">
+	<legend>Event Type</legend>
+
+	<p>Select the type of class or event</p>
+
+	<ul id="event_type">
+		<li>
+			<label>
+				<%= f.radio_button :event_type, :recurring, 'data-associate' => '#course_dates_reccurring' -%>
+				Recurring
+			</label>
+		</li>
+		<li>
+			<label>
+				<%= f.radio_button :event_type, :single, 'data-associate' => '#course_dates_single' -%>
+				Special single-day event
+			</label>
+		</li>
+		<li>
+			<label>
+				<%= f.radio_button :event_type, :multiple, 'data-associate' => '#course_dates_multiple' -%>
+				Special event with multiple dates
+			</label>
+		</li>
+	</ul>
+</fieldset>

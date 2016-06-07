@@ -1,0 +1,14 @@
+<script>
+  $(function() {
+    $('#area_field').autocomplete({
+      source: '/area_search',
+      autoFocus: true,
+      select: function(event, ui) {
+        if (ui.item.area_id) {
+          window.location.href='/' + ui.item.city + '/' + ui.item.region;
+        }
+      }
+    });
+  });
+</script>
+<%= text_field_tag :area_field, @area.city %>

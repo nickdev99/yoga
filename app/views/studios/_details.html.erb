@@ -1,0 +1,26 @@
+<script>
+  $(function(){
+    $('.del_detail').click(function(){
+      $(this).parents().eq(1).remove();
+    });
+  });
+</script>
+<div class="detail_row">
+  <span style="height: 100%;"></span>
+  <% if detail %>
+    <span class="detail_type"><%= detail.name %></span>
+    <%= hidden_field_tag "details[detail_#{detail.id}][type]", nil, :id => "type_#{detail.id}"%>
+    <span class="detail_data"><%= detail.data %></span>
+    <%= hidden_field_tag "details[detail_#{detail.id}][data]", nil, :id => "data_#{detail.id}"%>
+    <span class="detail_note"><%= detail.note %></span>
+    <%= hidden_field_tag "details[detail_#{detail.id}][note]", nil, :id => "note_#{detail.id}"%>
+  <%else%>
+    <span class="detail_type" id="detail_type"></span>
+    <%= hidden_field_tag "details[detail][type]", nil, :id => "type"%>
+    <span class="detail_data" id="detail_data"></span>
+    <%= hidden_field_tag "details[detail][data]", nil, :id => "data"%>
+    <span class="detail_note" id="detail_note"></span>
+    <%= hidden_field_tag "details[detail][note]", nil, :id => "note"%>
+  <%end%>
+  <span><input type="BUTTON" class="del_detail" value="Delete"/></span>
+</div>

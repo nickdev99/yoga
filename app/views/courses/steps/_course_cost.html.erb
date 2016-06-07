@@ -1,0 +1,56 @@
+<script>
+  $(function(){
+    if($('#price_cost_type_registration').attr('checked')){
+      $('#registration_details').show();
+    }
+    if($('#course_pre_registration_required').attr('checked')){
+      $('#pre_registration').show();
+    }
+    if($('#price_cost_type_donation').attr('checked')){
+      $('#donation_details').show();
+    }
+  });
+</script>
+<fieldset id="course_cost">
+
+  <legend>Cost</legend>
+
+  <%= fields_for :price do |price| %>
+    <ul>
+      <li>
+        <%= price.radio_button :cost_type, :free -%> Free
+      </li>
+      <li>
+        <%= price.radio_button :cost_type, :donation,
+          'data-associate' => '#donation_details' -%> By donation
+        <ul style="display: none;" id="donation_details">
+          <li>Minimum <%= price.text_field :minimum_donation -%></li>
+          <li>Recommended <%= price.text_field :recommended_donation -%></li>
+          <li><%= price.check_box :karma -%> Karma Class
+            (What's it for? <%= price.text_field :karma_target -%>)
+          </li>
+        </ul>
+      </li>
+      <li>
+        <%= price.radio_button :cost_type, :registration,
+          'data-associate' => '#registration_details' -%> Registration Required
+        <ul style="display: none;" id="registration_details">
+          <li><%= price.check_box :class_pass_accepted -%> Can use Class Pass</li>
+          <li><%= price.check_box :free_for_unlimited_pass -%> Free for Unlimited Pass holders</li>
+          <li>Additional fee for pass holders $ <%= price.text_field :additional_passholder_fee -%></li>
+          <li>Pre-Register Fee $ <%= price.text_field :pre_register_fee -%></li>
+          <li>At-The-Door Fee $ <%= price.text_field :at_door_fee -%></li>
+        </ul>
+      </li>
+    </ul>
+  <% end %>
+
+  <p><label><%= f.check_box :pre_registration_required -%> Pre-registration required</label></p>
+
+  <div id="pre_registration" style="display: none;">
+    <p><label>Link to form <%= f.text_field :registration_form_link -%></label></p>
+    <p><label>Email contact <%= f.text_field :registration_email -%></label></p>
+    <p><label>Phone contact <%= f.text_field :registration_phone_number -%></label></p>
+  </div>
+  <input type="submit" value="Next" />
+</fieldset>

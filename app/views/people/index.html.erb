@@ -1,0 +1,52 @@
+<script>
+  $(function(){
+    $('#roles').change(function(){
+      if ($(this).val() == ''){
+        window.location.href='/<%=@city%>/<%=@region_abbr%>/people';
+      }else{
+        window.location.href='?role=' + $(this).val();
+      }
+    });
+  });
+</script>
+<div class="provider">
+  <h2><%= @provider ? @provider.name : 'People' %></h2>
+</div>
+<div class="people_list">
+  <h2 id="schedule_name">People <%= link_to('Add new profile', new_provider_person_path(@city, @region_abbr, @provider), :class => 'github') if @provider %>
+    <%= select_tag :role, options_for_select([['All Roles', ''], ['Instructor', 'instructor'], ['Staff', 'staff'], ['Guest', 'guest'], ['Energy Exchanger/Volunteer', 'volunteer']], params[:role]), :id => 'roles' %>
+  </h2>
+  <% @people.each do |person| %>
+    <div id="person_<%= person.id %>" class="person">
+      <div class="person_content">
+        <div class="person_name">
+          <%= person.name(admin?) %>
+        </div>
+        <div class="person_permissions">
+          <%if @provider%>
+            <%= person.studios.where(:provider_id => @provider.id).collect {|p| p.name + ' studio, '}.join + person.roles.where(:provider_id => @provider.id).collect {|p| p.name.humanize}.join(', ') %>
+          <%else%>
+            <%= person.studios.collect {|p| p.name + ' studio, '}.join + person.roles.collect {|p| p.name.humanize}.join(', ') %>
+          <%end%>
+        </div>
+      </div>
+      <div class="del_person">
+        <%= link_to 'Profile', '/instructors/' + person.user.cached_slug + '/' + @city + '/' + @region_abbr, :class => 'github' if person.user.is_yoga_teacher%>
+        <%if @provider%>
+          <%= link_to 'Edit', edit_provider_person_path(@city, @region_abbr, @provider, person.user), :class => 'github'%>
+          <%= link_to 'x', provider_person_path(@city, @region_abbr, @provider, person), :class => 'github', :remote => true, :method => 'DELETE', :confirm => 'Are you sure?'%>
+        <%else%>
+          <%= link_to 'Edit', edit_profile_path(person.user), :class => 'github'%>
+          <%= link_to 'x', "/#{@city}/#{@region_abbr}/people/destroy/#{person.id}", :class => 'github', :remote => true, :method => :post, :confirm => 'Are you sure?'%>
+        <%end%>
+      </div>
+      <div class="clear"></div>
+    </div>
+    <div class="clear"></div>
+  <% end %>
+  <%if admin?%>
+    <div style="margin-top: 20px;">
+      <%= link_to 'All People', "/#{@city}/#{@region_abbr}/people?admin=all_people" %>
+    </div>
+  <%end%>
+</div>

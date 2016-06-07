@@ -1,0 +1,88 @@
+<script>
+  $(function() {
+    $( "#datepicker" ).datepicker({
+      showOn: "button",
+      buttonImage: "/images/one-pixel.png",
+      buttonImageOnly: true,
+      onSelect: function(dateText, inst)
+      {
+        window.location.href='schedule_updates?date=' + dateText;
+      }
+    });
+  });
+</script>
+
+<div id="provider">
+  <h2><%= @provider.name -%> </h2>
+  <p id="studios">
+    <% @studios.each do |studio| -%>
+      <%= link_to studio.name, provider_studio_schedule_updates_path(@city, @region_abbr, @provider, studio), :class => ('current' if studio == @studio) -%>
+    <% end %>
+  </p>
+</div>
+<div class="datepicker">
+  <%= hidden_field_tag :datepicker, nil %>
+  <%= link_to 'select date', '#', :onclick => '$( "#datepicker" ).datepicker( "show" ); return false;', :class => 'github' %>
+  &nbsp;or&nbsp;
+  <%=link_to 'show all', provider_studio_schedule_updates_path(@city, @region_abbr, @provider, @studio), :class => 'github' %>
+</div>
+<h3 class="feel_yoga"><%= @studio.name -%> SCHEDULE <%= link_to "ADD EVENT", new_provider_studio_course_path(@city, @region_abbr, @provider, @studio), :class => 'github' %></h3>
+<h2>Planned Schedule Updates</h2>
+<div class="workshop">
+  <% @courses.each do |date, courses| %>
+    <div class="date_title"><%= date.strftime("%b %d %Y") %></div>
+    <%
+    reccuring_classes = courses.select { |c| c.event_type == 'recurring' }
+    single_classes = courses.select { |c| c.event_type == 'single' }
+    multiple_classes = courses.select { |c| c.event_type == 'multiple' }
+  %>
+    <%unless reccuring_classes.blank? %>
+      <div class="class_type">Recurring Classes</div>
+      <% reccuring_classes.each do |course| %>
+        <div class="event">
+          <%if course.start_date == date %>
+          <div class="event_name"><div class="green_square"></div> <%=course.time_span%> (<%=Timespan.new(course.time_span).length_in_minutes%>) <%=course.name%></div>
+          <%else%>
+            <div class="event_name"><div class="grey_square"></div> <%=course.time_span%> - <%=course.name%></div>
+          <%end%>
+          <div class="edit_event">
+            <%= link_to 'edit', edit_provider_studio_course_path(@city, @region_abbr, @provider,@studio,course)%>
+          </div>
+        </div>
+        <div class="clear"></div>
+      <%end%>
+    <%end%>
+    <%unless single_classes.blank? %>
+      <div class="class_type">Single-Day Classes</div>
+      <% single_classes.each do |course| %>
+        <div class="event">
+          <%if course.start_date == date %>
+            <div class="event_name"><div class="green_square"></div> <%=course.time_span%> (<%=Timespan.new(course.time_span).length_in_minutes%>) <%=course.name%></div>
+          <%else%>
+            <div class="event_name"><div class="grey_square"></div><%=course.time_span%> - <%=course.name%></div>
+          <%end%>
+          <div class="edit_event">
+            <%= link_to 'edit', edit_provider_studio_course_path(@city, @region_abbr, @provider,@studio,course)%>
+          </div>
+        </div>
+        <div class="clear"></div>
+      <%end%>
+    <%end%>
+    <%unless multiple_classes.blank? %>
+      <div class="class_type">Multiple-Day Classes</div>
+      <% multiple_classes.each do |course| %>
+        <div class="event">
+          <%if course.start_date == date %>
+            <div class="event_name"><div class="green_square"></div><%=course.time_span%> (<%=Timespan.new(course.time_span).length_in_minutes%>) <%=course.name%></div>
+          <%else%>
+            <div class="event_name"><div class="grey_square"></div><%=course.time_span%> - <%=course.name%></div>
+          <%end%>
+          <div class="edit_event">
+            <%= link_to 'edit', edit_provider_studio_course_path(@city, @region_abbr, @provider,@studio,course)%>
+          </div>
+        </div>
+        <div class="clear"></div>
+      <%end%>
+    <%end%>
+  <%end%>
+</div>

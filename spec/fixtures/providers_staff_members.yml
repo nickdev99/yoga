@@ -1,0 +1,7 @@
+first:
+  provider_id: 1
+  staff_member_id: 1
+
+second:
+  provider_id: 1
+  staff_member_id: 2

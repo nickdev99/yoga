@@ -1,0 +1,53 @@
+<script>
+  $(function(){
+    $('#area_text_field').autocomplete({
+      autoFocus: true,
+      source: '/area_search',
+      select: function(event, ui) {
+        $('#studio_area_id').val(ui.item.area_id);
+      }
+    });
+    $('#add_row').click(function(){
+      var number = $('.details_rows').find('input').length == 0 ? 1 : parseInt($($('.details_rows').find('input')[$('.details_rows').find('input').length -2]).attr('id').split('_')[1]) + 1;
+      $('.details_rows').append('<%= escape_javascript(render(:partial => "details", :locals  => {:detail => nil}))%>');
+      $('#detail_type').text($('#types').val()).attr('id', 'detail_type_' + number);
+      $('#type').val($('#types').val()).attr('name', "details[detail_" + number + "][type]").attr('id', 'type_' + number);
+      $('#detail_data').text($('#data_field').val()).attr('id', 'detail_data_' + number);
+      $('#data').val($('#data_field').val()).attr('name', "details[detail_" + number + "][data]").attr('id', 'data_' + number);
+      $('#detail_note').text($('#note_field').val()).attr('id', 'detail_note_' + number);
+      $('#note').val($('#note_field').val()).attr('name', "details[detail_" + number + "][note]").attr('id', 'note_' + number);
+      var data = $('#form').serialize();
+
+      $.post("/<%=@provider.cached_slug%>/<%=@studio.cached_slug%>/providers/<%=@provider.cached_slug%>/studios/<%=@studio.cached_slug%>", data);
+    });
+  });
+</script>
+<h2>Edit Studio</h2>
+
+<%= form_for [@provider, @studio], :html => {:id => :form} do |f| %>
+  <%= render :partial => "shared/form_errors", :locals => {:obj => @studio} %>
+  <p><label>Name <%= f.text_field :name -%></label></p>
+  <p><label>City, Province, Country <%= text_field_tag :area_text_field, @area.city + ', ' + @area.region + ' (' + @area.region_abbr + ') ' + @area.country, :style => 'width: 254px;' -%><%= f.hidden_field :area_id -%></label></p>
+  <p><label>Address <%= f.text_field :address -%></label></p>
+  <p><label>Phone number <%= f.text_field :phone_number -%></label></p>
+  <p><label>Minimum Course Attendance <%= f.text_field :minimum_course_capacity -%></label></p>
+  <p><label><%= f.radio_button :studio_type, 'studio' -%> Studio <%= f.radio_button :studio_type, 'non-studio' -%> Non-studio location <%= f.radio_button :studio_type, 'store' -%> Store</label></p>
+  <div class="other_details">
+    <h3>Other Details</h3>
+    <div class="add_row">
+      Type:
+      <%=select_tag :types, options_for_select(['website', 'email', 'phone', 'fax', 'facebook', 'twitter', 'linkedin'])%>
+      Data:
+      <%= text_field_tag :data_field %>
+      Note:
+      <%= text_field_tag :note_field %>
+      <input type="BUTTON" id="add_row" value="Add"/>
+    </div>
+    <div class="details_rows">
+      <% @studio.details.each do |d| %>
+        <%= render :partial => 'details', :locals => {:detail => d} %>
+      <%end%>
+    </div>
+  </div>
+  <p class="submit"><%= f.submit -%></p>
+<% end %>

@@ -1,0 +1,37 @@
+<div id="page-title">
+  <h1>Areas</h1>
+</div>
+
+
+
+
+<ul class="areas">
+  <li class="new_area">
+    <div><%= link_to('Add New Area', new_area_path) %><br/></div>
+  </li>
+  <li class="<%= cycle('odd', 'even') %>" style='height:30px; display:block; text-align:center; padding-top:10px'>
+    <div class="city"><b>City</b></div>
+    <div class="region"><b>Region</b></div>
+    <div class="country"><b>Country</b></div>
+    <div class="population"><b>Population</b></div>
+    <div class="active_area"><b>Active</b></div>
+    <div class="focus"><b>Focus</b></div>
+    <div class="actions"><b>Actions</b></div>
+  </li>
+  <% for area in @areas %>
+    <li  class="<%= cycle('odd', 'even') %>" style='height:30px; display:block; text-align:center; padding-top:10px'>
+      <div class="city"><%=area.city.blank? ? '-' : area.city%></div>
+      <div class="region"><%=area.region.blank? ? '-' : area.region%> / <%=area.region_abbr.blank? ? '-' : area.region_abbr%></div>
+      <div class="country"><%=area.country_code.blank? ? '-' : area.country_code %></div>
+      <div class="population"><%=area.population.blank? ? '-' : area.population %></div>
+      <div class="active_area"><%=area.active ? 'x' : '-' %></div>
+      <div class="focus"><%=area.focus  ? 'x' : '-' %></div>
+      <div style='width:50px; float:left; padding-left:30px;'>
+        <%=  link_to('Edit', edit_area_path(area.id)) %>
+      </div>
+      <div style='width:50px; float:left;'>
+        <%= link_to('Delete', area_path(area.id), :confirm => "Are You Sure?", :method => :delete ) %>
+      </div>
+    </li>
+  <% end %>
+</ul>   

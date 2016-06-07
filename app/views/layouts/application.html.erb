@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%= raw analytical.head_prepend_javascript %>
+    <title><%= render_title %></title>
+    <link rel="shortcut icon" href="/favicon.ico?v=1"></link>
+
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+
+    <% if controller.controller_name == 'schedules' %>
+      <meta name="description" content="<%= @provider.name %> studio schedule and classes in <%=@city.capitalize%>, <%=@area.region%> :: I Live Yoga" />
+      <meta name="keywords" content="<%= @provider.name %>, <%= @provider.name %> <%=@city.downcase%>, <%= @provider.name %> schedule, yoga classes, yoga studios, yoga <%=@city.downcase%>" />
+      <meta name="language" content="en-US" />
+    <% elsif controller.controller_name == 'home' && @style %>
+      <meta name="description" content="<%= @style.name %> classes for all studios in <%=@city.capitalize%>, <%=@area.region%> :: I Live Yoga" />
+      <meta name="keywords" content="<%= @style.name %> <%=@city.downcase%>, <%= @style.name %>, <%= @style.name %> classes, <%= @style.name %> studios" />
+      <meta name="language" content="en-US" />
+    <% else %>
+      <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+      <meta name="description" content="All classes for all yoga studios in <%=@city.capitalize%>, <%=@area.region%> :: I Live Yoga" />
+      <meta name="keywords" content="yoga <%=@city.downcase%>, <%=@city.downcase%> yoga, yoga classes, yoga studios, i live yoga, ily" />
+      <meta name="language" content="en-US" />
+    <% end %>
+
+    <%= stylesheet_link_tag 'default' %>
+    <%= stylesheet_link_tag 'jquery_ui/ui-lightness/jquery-ui' -%>
+    <%= stylesheet_link_tag 'chosen.css' -%>
+
+    <%= javascript_include_tag :defaults %>
+    <%= javascript_include_tag 'jquery-ui.min.js' -%>
+    <%= javascript_include_tag 'jquery.ui.autocomplete.js' -%>
+    <%= javascript_include_tag 'chosen.jquery.js' -%>
+
+    <%= csrf_meta_tag %>
+    <%= raw analytical.head_append_javascript %>
+  </head>
+  <body>
+    <%= raw analytical.body_prepend_javascript %>
+    <div id="page">
+      <div id="header">
+        <div class="header-content">
+          <div id="search-box">
+            <%= text_field_tag :search, 'Search Studios', :class => "search-box" %>
+          </div>
+          <div id="login-box">
+            <% if !current_user %>
+              <%= link_to "Login", new_user_session_path %>
+            <% else %>
+              <%= link_to "settings", edit_profile_path(current_user)%>&emsp;
+              <%= link_to "logout", destroy_user_session_path %>
+            <% end %>
+          </div>
+          <div id="share">
+            <script>
+              function fbs_click() {window.open('http://www.facebook.com/sharer.php?u=iliveyoga.ca','sharer','toolbar=0,status=0,width=626,height=300');return false;}
+            </script>
+            <a rel="nofollow" href="http://www.facebook.com/share.php?u=<;url>" onclick="return fbs_click()" target="_blank"><img src="/images/fb.gif" alt="Facebook I Live Yoga"/> Share on Facebook</a>
+            <a href="http://twitter.com/share" data-text="Check out I Live Yoga - <%= @area.city %> :: All Studios, All Classes - http://www.iliveyoga.ca/<%=@city%>/<%=@region_abbr%>/" data-count="none"><img src="/images/tweet.gif" alt="Tweet I Live Yoga"> Share on twitter</a>
+            <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+          </div>
+        </div>
+      </div>
+      <p class="notice"><%= flash[:notice] %></p>
+      <p class="alert"><%= flash[:error] %></p>
+      <%= render :partial => 'shared/sidebar' %>
+      <div id="main">
+        <%= yield %>
+      </div>
+      <div class="clear"></div>
+      <div id="footer">
+        <br/><br/>
+        <p>This site is dedicated to Jen Leeder and anyone who challenges themselves or struggles to find balance.<p>
+        <p>iliveyoga@gmail.com <%= link_to "I Live Yoga Blog", "http://iliveyoga.tumblr.com" %></p>
+        <p>Copyright &copy 2011</p>
+      </div>
+    </div>
+    <%= raw analytical.body_append_javascript %>
+    <!-- begin olark code --><script type='text/javascript'>/*{literal}<![CDATA[*/window.olark||(function(i){var e=window,h=document,a=e.location.protocol=="https:"?"https:":"http:",g=i.name,b="load";(function(){e[g]=function(){(c.s=c.s||[]).push(arguments)};var c=e[g]._={},f=i.methods.length; while(f--){(function(j){e[g][j]=function(){e[g]("call",j,arguments)}})(i.methods[f])} c.l=i.loader;c.i=arguments.callee;c.f=setTimeout(function(){if(c.f){(new Image).src=a+"//"+c.l.replace(".js",".png")+"&"+escape(e.location.href)}c.f=null},20000);c.p={0:+new Date};c.P=function(j){c.p[j]=new Date-c.p[0]};function d(){c.P(b);e[g](b)}e.addEventListener?e.addEventListener(b,d,false):e.attachEvent("on"+b,d); (function(){function l(j){j="head";return["<",j,"></",j,"><",z,' onl'+'oad="var d=',B,";d.getElementsByTagName('head')[0].",y,"(d.",A,"('script')).",u,"='",a,"//",c.l,"'",'"',"></",z,">"].join("")}var z="body",s=h[z];if(!s){return setTimeout(arguments.callee,100)}c.P(1);var y="appendChild",A="createElement",u="src",r=h[A]("div"),G=r[y](h[A](g)),D=h[A]("iframe"),B="document",C="domain",q;r.style.display="none";s.insertBefore(r,s.firstChild).id=g;D.frameBorder="0";D.id=g+"-loader";if(/MSIE[ ]+6/.test(navigator.userAgent)){D.src="javascript:false"} D.allowTransparency="true";G[y](D);try{D.contentWindow[B].open()}catch(F){i[C]=h[C];q="javascript:var d="+B+".open();d.domain='"+h.domain+"';";D[u]=q+"void(0);"}try{var H=D.contentWindow[B];H.write(l());H.close()}catch(E){D[u]=q+'d.write("'+l().replace(/"/g,String.fromCharCode(92)+'"')+'");d.close();'}c.P(2)})()})()})({loader:(function(a){return "static.olark.com/jsclient/loader0.js?ts="+(a?a[1]:(+new Date))})(document.cookie.match(/olarkld=([0-9]+)/)),name:"olark",methods:["configure","extend","declare","identify"]});
+      /* custom configuration goes here (www.olark.com/documentation) */
+      olark.identify('3901-606-10-2053');/*]]>{/literal}*/</script>
+    <!-- end olark code -->
+  </body>
+</html>

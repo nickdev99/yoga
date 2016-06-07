@@ -1,0 +1,2 @@
+$('#time_in_minutes_<%=params[:course_id]%>').text('<%= Timespan.new(params[:time_span]).length_in_minutes %>');
+$('#loader_' + '<%=params[:course_id]%>').show().fadeOut(1600);

@@ -1,0 +1,8 @@
+$('#full_edit').html('<%= escape_javascript(render :partial => 'courses/full_edit') %>');
+<% if @is_new_record %>
+  $('#course_row_').html('<%= escape_javascript(render :partial => 'bulk_schedules/course_row', :locals => {:course => @course}) %>');
+  $('.new_class').html('');
+  $('#courses_<%=@course.week_day%>').prepend('<div id="course_row_<%=@course.id%>">' + '<%= escape_javascript(render :partial => 'course_row', :locals => {:course => @course})%>' + '</div>');
+  $('.loader').hide();
+<%end%>
+$('#full_edit').dialog('open');

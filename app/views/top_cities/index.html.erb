@@ -1,0 +1,19 @@
+<h2>Top Cities</h2>
+<div class="cities">
+  <h3>Cities</h3>
+  <% @data.each do |data|%>
+    <%= link_to data[:city].city, homes_path(data[:city].city_slug, data[:city].region_abbr) %><br/>
+  <%end%>
+</div>
+<div class="instructors">
+  <h3>Instructors</h3>
+  <% @data.each do |data|%>
+    <%= link_to data[:instructors].to_s + ' instructors', instructors_path(data[:city].city_slug, data[:city].region_abbr) %><br/>
+  <%end%>
+</div>
+<div class="studios">
+  <h3>Studios</h3>
+  <% @data.each do |data|%>
+    <%= link_to (data[:studios][:course] * 4).to_s + ' classes, ' + data[:studios][:studio].to_s + ' studios', homes_path(data[:city].city_slug, data[:city].region_abbr)%><br/>
+  <%end%>
+</div>

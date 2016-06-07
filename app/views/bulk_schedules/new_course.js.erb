@@ -1,0 +1,5 @@
+//window.location.href='/<%=@city%>/<%=@region_abbr%>/providers/<%=@provider.cached_slug%>/studios/<%=@studio.cached_slug%>/courses/<%=@course.id%>/edit';
+$('.new_class').html('');
+$('#courses_<%=@course.week_day%>').prepend('<div id="course_row_<%=@course.id%>">' + '<%= escape_javascript(render :partial => 'course_row', :locals => {:course => @course})%>' + '</div>');
+shedule_initialize();
+$('.loader').fadeOut(1600);

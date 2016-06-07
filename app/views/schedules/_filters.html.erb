@@ -1,0 +1,7 @@
+<%if @hot_available%><%= filter_link_to "Hot classes", schedules_path(@city, @region_abbr, @provider, @studio, :filter => 'hot', :wday => params[:wday]), params[:filter] == 'hot'%><%end%>
+<%if @room_temp_available%><%= filter_link_to "Room temp classes", schedules_path(@city, @region_abbr, @provider, @studio, :filter => 'room_temp', :wday => params[:wday]), params[:filter] == 'room_temp' %><%end%>
+<%= filter_link_to "60 min or less", schedules_path(@city, @region_abbr, @provider, @studio, :filter => 'less', :wday => params[:wday]), params[:filter] == 'less' %>
+<%= filter_link_to "Longer than 60 mins", schedules_path(@city, @region_abbr, @provider, @studio, :filter => 'more', :wday => params[:wday]), params[:filter] == 'more' %>
+<% @courses_styles.uniq.each do |style| %>
+  <%= filter_link_to style.name, schedules_path(@city, @region_abbr, @provider, @studio, :filter => 'style', :style => style, :wday => params[:wday]), params[:filter] == 'style' && params[:style] == style.cached_slug %>
+<% end %>

@@ -1,0 +1,19 @@
+<p><strong>Done</strong></p>
+<p>Confirm information above is correct</p>
+
+<script type="text/javascript" charset="utf-8">
+	<% if !@course.recurring? && @course.occurrences.last && @course.occurrences.last.start_time %>
+	$('#timing strong').html('<%= Time.at(@course.occurrences.last.start_time * 3600).utc.strftime("%I:%M%p") %>');
+	$('#timing span').html('<%= pluralize(@course.occurrences.last.end_time.to_i - @course.occurrences.last.start_time.to_i, "hour") %>');
+	<% end %>
+	
+	<% if @course.recurring? && @course.occurrences.last && @course.occurrences.last.start_time %>
+	$('#timing strong').html('<%= Time.at(@course.occurrences.last.start_time * 3600).utc.strftime("%I:%M%p") %>');
+	$('#timing span').html('<%= pluralize(@course.occurrences.last.end_time.to_i - @course.occurrences.last.start_time.to_i, "hour") %>');
+	<% end %>
+	
+	$('#details strong').html('<%= @course.name ? @course.name : "no name" %>');
+	<% if @course.room %>
+	$('#details span').html('<%= "#{@course.room.name} (#{@course.room_temperature_name})" %>');
+	<% end %>
+</script>

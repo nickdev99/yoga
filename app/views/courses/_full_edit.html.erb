@@ -1,0 +1,85 @@
+<script>
+  var course_type = "<%= @course.event_type %>";
+  var editCourse = true;
+  $(function(){odserv_events();});
+</script>
+
+<div id="steps" class="coursesSteps">
+  <h3>5 Quick Steps</h3>
+
+  <ul class="steps">
+    <li style="padding-top: 11px"><a href="#" data-step="course_dates">When</a></li>
+    <li><a href="#" data-step="course_details">What</a></li>
+    <li><a href="#" data-step="course_instructors">Who</a></li>
+    <li><a href="#" data-step="course_cost">Cost</a></li>
+    <li><a href="#" data-step="course_done">Done</a></li>
+  </ul>
+</div>
+<!-- /Form Steps -->
+
+<!-- form content -->
+<div id="course_form_container">
+  <h2>Add New Event</h2>
+  <!-- Form object details -->
+  <!-- Secctions will be empty before enter -->
+  <div id="preview">
+    <div id="timing">
+      <p>
+        <% if !@course.recurring? && @course.occurrences.last && @course.occurrences.last.start_time %>
+          <strong><%= Time.at(@course.occurrences.last.start_time * 60).utc.strftime("%l:%M%p") %></strong>
+          <span class="subtle"><%= pluralize(@course.occurrences.last.end_time.to_i - @course.occurrences.last.start_time.to_i, "minute") %></span>
+        <% end %>
+        <% if @course.recurring? && @course.start_time %>
+          <strong><%= Time.at(@course.start_time * 60).utc.strftime("%l:%M%p") %></strong>
+          <span class="subtle"><%= pluralize(@course.end_time.to_i - @course.start_time.to_i, "minute") %></span>
+        <% end %>
+      </p>
+    </div>
+
+    <div id="details">
+      <p><strong><%= @course.name %></strong> <span class="subtle"><%= @course.room.name if @course.room %> (<%= @course.room_temperature_name %>)</span></p>
+    </div>
+
+    <div id="instructor">
+      <p><strong><%= @course.assignments.first ? @course.assignments.first.staff_member.name(admin?) : '' %></strong> <span class="subtle"></span></p>
+    </div>
+
+    <p style="clear: left; margin: 0;"></p>
+  </div>
+  <!-- /Form object details -->
+  <div id="current_step">
+    <%= form_for :course, :url => provider_studio_course_path(@city, @region_abbr, @provider, @studio, @course),
+      :html 		=> {:id => 'course_form', :method => :put, :remote => true} do |f|
+    %>
+      <!-- course_type -->
+      <%= render :partial => 'courses/steps/course_type', :locals => {:f => f} %>
+      <!-- /course type -->
+
+      <!-- course dates -->
+      <%= render :partial => 'courses/steps/course_dates', :locals => {:f => f, :edit => true} %>
+      <!-- /course dates -->
+
+      <!-- course details -->
+      <%= render :partial => 'courses/steps/course_details', :locals => {:f => f, :course => @course} %>
+      <!-- /course details -->
+
+      <!-- course instructors -->
+      <%= render :partial => 'courses/steps/course_instructors', :locals => {:f => f, :provider => @provider, :studio => @studio, :course => @course } %>
+      <!-- /course instructors -->
+
+      <!-- course cost -->
+      <%= render :partial => 'courses/steps/course_cost', :locals => {:f => f} %>
+      <!-- /course cost -->
+
+      <!-- course done -->
+      <fieldset id="course_done">
+        <p><strong>Done</strong></p>
+        <p>Confirm information above is correct</p>
+        <input type="submit" value="Save" />
+      </fieldset>
+      <!-- /course done -->
+      <%= f.submit "Save changes - I'm done editing" %>
+    <% end %>
+  </div>
+</div>
+<!-- /form content -->

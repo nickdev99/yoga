@@ -1,0 +1,32 @@
+<ul id="course_assignments">
+  <% @course.assignments.each do |assignment| %>
+    <li>
+      <%= assignment.staff_member.name(admin?) %>
+
+      <% assignment_roles.each do |role| %>
+        <label>
+          <%= radio_button_tag "assignment_#{assignment.id}[role_id]", role.id, role == assignment.role,
+            'data-target-url'	=> url_for([@provider, @studio, @course, @occurrence, assignment]) -%>
+          <%= role.name -%>
+        </label>
+      <% end %>
+
+      <%= link_to 'remove', [@provider, @studio, @course, @occurrence, assignment],
+        :method => :delete,
+        :remote => true,
+        :id 		=> 'delete_assignment' -%>
+    </li>
+  <% end %>
+</ul>
+
+<%# 
+Check or uncheck the "Instructors TBA" box depending 
+on whether any instructors are assigned 
+-%>
+<script type="text/javascript" charset="utf-8">
+<% if @course.assignments.empty? %>
+    $('#course_staff_tba').attr('checked', true);
+<% else %>
+    $('#course_staff_tba').attr('checked', false);
+<% end %>
+</script>

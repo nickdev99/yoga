@@ -1,0 +1,49 @@
+<% if courses.any? %>
+  <% courses.each do |wday, c| %>
+<h2 style="color: #999"><%= day_of_week wday%></h2>
+     <% c.each do |course| %>
+    <div id="preview" class="schedule <%= cycle("even", "odd") %>">
+      <% if current_user %><%#= link_to "Edit", edit_provider_studio_course_path(@city, @region_abbr, @provider, @studio, course), :class => "editSchedule" %><% end %>
+      <div id="timing">
+        <p>
+          <% if !course.recurring? && course.occurrences.last && course.occurrences.last.start_time %>
+            <strong><%= Time.at(course.occurrences.last.start_time * 60).utc.strftime("%l:%M%p") %></strong>
+
+            <span class="subtle"><%= pluralize(course.occurrences.last.end_time.to_i - course.occurrences.last.start_time.to_i, "minute") %></span>
+          <% end %>
+          <% if course.recurring? && course.start_time %>
+            <strong><%= Time.at(course.start_time * 60).utc.strftime("%l:%M%p") %></strong>
+            <span class="subtle"><%= pluralize(course.end_time.to_i - course.start_time.to_i, "minute") %></span>
+          <% end %>
+         </p>
+      </div>
+
+      <div id="details">
+        <p>
+          <strong><%= course.name -%></strong>
+          <span class="subtle"><%= course.room_name -%> (<%= course.room_temperature_name -%>)</span>
+        </p>
+      </div>
+
+      <div id="instructor">
+        <p><strong><%= course.assignments.first ? course.assignments.first.staff_member.name(admin?) : '' %></strong> <span class="subtle"></span></p>
+      </div>
+
+      <p style="clear: left; margin: 0;"></p>
+    </div>
+    <%end%>
+  <% end %>
+<% else %>
+  <p><b>No classes</b></p>
+<% end %>
+<script type="text/javascript" charset="utf-8">
+  $(document).ready(function() {
+    // Schedule
+    $(".schedule").mouseenter(function(){
+      $(this).find(".editSchedule").show();
+    })
+    $(".schedule").mouseleave(function(){
+      $(this).find(".editSchedule").hide();
+    })
+  });
+</script>

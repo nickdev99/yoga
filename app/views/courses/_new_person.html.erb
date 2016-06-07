@@ -1,0 +1,31 @@
+<div class="new_person_title">
+  <h2 id="schedule_name">Create New Profile</h2>
+</div>
+<div class="new_person_content">
+  <p>Note: Start typing in their first or last name, or email and auto-suggest will let you see if they are already on ILY. Select their name if you see them listed!</p>
+  <%= form_for(:user, :url => person_path(@city, @region_abbr), :html => {:method => :post, :remote => true}) do |f|%>
+    <%= hidden_field_tag :assign_instructor, assign_instructor %>
+    <%= hidden_field_tag :provider_id, @provider.id %>
+    <%= hidden_field_tag :studio_id, @studio.id %>
+    <%= hidden_field_tag :course_id%>
+    <div class="auto-suggest">
+      <div><span>First name</span> <%= f.text_field :first_name, :id => :first_name-%></div>
+      <div><span>Last name</span> <%= f.text_field :last_name, :id => :last_name -%></div>
+      <div><span>Email</span> <%= f.text_field :email, :id => :email -%></div>
+    </div>
+    <p>Note: Email is required for anyone not already on ILY. We will send them an invitation on your behalf if they aren't on ILY yet. If you don't know their email, please leave Instructor blank for now.</p>        
+    <div class="clear"></div>
+    <div><h3>Roles</h3></div>
+    <div><%= check_box_tag 'roles[instructor]' -%><span>Instructor</span></div>
+    <div><%= check_box_tag 'roles[staff]' -%><span>Staff</span></div>
+    <div><%= check_box_tag 'roles[guest]' -%><span>Guest</span></div>
+    <div><%= check_box_tag 'roles[volunteer]' -%><span>Energy Exchanger/Volunteer</span></div>
+    <h3>Admin permissions</h3>
+    <div><%= check_box_tag :all_studios -%><span>All studios</span></div>
+    <% @studios.each do |studio| %>
+      <div><%= check_box_tag "[studios]studio_#{studio.id}" -%><span><%= studio.name %></span></div>
+    <% end %>
+    <%= f.submit "Add to Class" %>
+    <%= link_to 'Cancel', '#', :onclick => "$('#dialog').dialog('close'); return false;"%>
+  <%end%>
+</div>

@@ -1,0 +1,9 @@
+<div id="page-title">
+  <h1>Edit <%=@area.city %></h1>
+</div>
+
+<% form_for(:area, :url => area_path(@area), :html => { :method => :put } ) do |f| %>
+  <%= render :partial => 'edit_area_form', :locals => {:f => f} %>
+  <%= submit_tag 'Update' %>
+  <%= link_to 'Cancel', areas_path %>
+<% end %>

@@ -1,0 +1,49 @@
+<script>
+  $(function() {
+    $( "#provider_formated_featured_date" ).datepicker({
+      showOn: "button",
+      buttonImage: "/images/one-pixel.png",
+      buttonImageOnly: true
+      }
+  );
+    $("#set_date").click(function(){
+      $( "#provider_formated_featured_date" ).datepicker("setDate" , $( "#provider_formated_featured_date" ).val()).datepicker("show");
+      return false;
+    });
+    $("#clear").click(function(){
+      $( "#provider_formated_featured_date" ).val('');
+      return false;
+    });
+  });
+</script>
+<h2 id="provider-name"><span><%= @provider.name %></span> <% if current_user %><a href="#" title="edit" class="github" id="edit-provider-name">edit</a> <%= link_to "Add new location", new_provider_studio_path(@city, @region_abbr, @provider), :class => 'github' %><% end %>
+  <div style="float: right">   <%= link_to "People", provider_people_path(@city, @region_abbr, @provider), :class => 'github' %>
+    <%= link_to "+", new_provider_person_path(@city, @region_abbr, @provider), :class => 'github' %></div>
+</h2> 
+<%= form_for :provider, :url => provider_path(@city, @region_abbr, @provider), :html => {:method => :put, :remote => true, :id => id= "edit_provider_#{@provider.id}", :class => "edit_provider"} do |f| %>
+  <%= f.text_field :name %>
+  <span class="featured"><%= f.check_box :is_featured %>Featured <br><%= link_to 'set expiry date', '#', :id => 'set_date' %><br><%= link_to :clear, '#', :id => 'clear' %></span>
+
+  <%= f.hidden_field :formated_featured_date %>
+  <%= f.submit "Save" %>
+
+<% end %>
+
+<ul id="studios-listing">
+  <% @studios.each do |studio| %>
+    <li>
+      <strong><%= studio.name %></strong> <%= link_to  :edit, edit_provider_studio_path(@city, @region_abbr, @provider, studio), :class => 'github' %>
+      <%= link_to "Bulk edit Schedule", provider_studio_bulk_schedules_path(@city, @region_abbr, @provider, studio), :class => 'github' %><br><br>
+      <div>
+        <%= studio.address %> <%= studio.phone_number %>
+      </div>
+      <% if current_user %><span><%= link_to "Add new room", new_provider_studio_room_path(@city, @region_abbr, @provider, studio), :class => 'github'  %></span><% end %>
+      <ul>
+        <% studio.rooms.each do |room| %>
+          <li><%= link_to room.name, edit_provider_studio_room_path(@city, @region_abbr, @provider, studio, room) %></li>
+
+        <% end %>
+      </ul>
+    </li>
+  <% end %>
+</ul>

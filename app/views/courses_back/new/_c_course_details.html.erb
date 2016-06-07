@@ -1,0 +1,96 @@
+<%= form_for [@provider, @studio, @course], 
+						 :remote 	=> true, 
+						 :html 		=> {:id => 'course_form'} do |f| 
+						 %>
+	<!-- course_details -->	
+	<fieldset id="course_details">
+		<%= hidden_field_tag :next_step, 4 -%>	
+	
+		<legend>What</legend>
+	
+		<p><label>Name</label> <%= f.text_field :name -%></p>
+		<p><%= link_to_function 'set styles', '$("#course_styles").toggle()' -%></p>
+		
+		<div id="course_styles" style="display: none;">
+			<ul>
+				<% CourseStyle.all.each do |style| %>
+					<li>
+						<label>
+							<%= check_box_tag 'course[style_ids][]', style.id, @course.styles.include?(style) -%>
+							<%= style.name -%>
+						</label>
+					</li>
+				<% end %>
+			</ul>
+			
+			<h3>Handsy-ness</h3>
+			
+			<p><label><%= check_box_tag :handsy, 'Hands-off' -%> Hands-off</label></p>
+			<p><label><%= check_box_tag :handsy, 'Manual Assists/Enhancements' -%> Manual Assists/Enhancements</label></p>			
+		</div>
+	
+		<p><label>Room</label></p>
+		<%= hidden_field_tag :room_url_base, provider_studio_rooms_path(@provider, @studio) -%>
+		<p><%= f.select :room_id, select_tag_options_for(@studio.rooms, :name), :include_blank => true -%></p>
+	
+		<h3>Room temperature</h3> 
+	
+		<ul id="room_temperature">
+			<% RoomTemperature.all.each do |temp| %>
+				<li><%= f.radio_button :room_temperature_id, temp.id -%> <%= label_tag "course_room_temperature_id_#{temp.id}", temp.name -%></li>
+			<% end %>
+		</ul>
+
+		<p>
+			<label>Min. numbers <%= f.text_field :minimum_capacity, :class => 'capacity' -%></label>
+			<label>Max. capacity <%= f.text_field :maximum_capacity, :class => 'capacity' -%></label>
+		</p>	
+	
+		<p>
+			<label>Experience Level</label> 
+			
+			<ul id="experience_level">
+				<% ExperienceLevel.all.each do |level| %>
+					<li>
+						<%= check_box_tag 'course[experience_level_ids][]', level.id, @course.experience_levels.include?(level), :id => "course_experience_level_#{level.id}" -%>
+						<%= label_tag "course_experience_level_#{level.id}", level.name -%>
+					</li>
+				<% end %>
+			</ul>
+		</p>
+	
+		<p>
+			<label>Practice Level</label>
+			
+			<ul id="practice_level">
+				<% PracticeLevel.all.each do |level| %>
+					<li>
+						<%= check_box_tag 'course[practice_level_ids][]', 
+															level.id, 
+															@course.experience_levels.include?(level),
+															:id => "course_practice_level_ids_#{level.id}"
+															-%>
+						<%= label_tag "course_practice_level_ids_#{level.id}", level.name -%>					
+					</li>
+				<% end %>
+			</ul>
+		</p>
+	
+		<p><%= link_to 'Add description', '#course_description', :class => 'reveal' -%><p> 
+		<%= f.text_area :description, :style => 'display: none;' -%>
+	
+		<p><%= link_to 'Add a notice', '#course_notice', :class => 'reveal' -%></p> 
+		<%= f.text_field :notice, :style => 'display: none;' -%>
+	
+		<p><%= link_to 'Add link to more info', '#course_information_link', :class =>'reveal' -%></p>
+		<%= f.text_field :information_link, :style => 'display: none;' -%>
+	</fieldset>
+	
+	<%= f.submit 'Save & go to next step' -%> or <%= link_to 'go back a step', nil, :id => 'step_back' -%>
+<% end %>
+<script type="text/javascript" charset="utf-8">
+	$(function() {
+  	  new showAssociated();
+  		$("#room_temperature, #experience_level, #practice_level").buttonset();
+  	});
+</script>

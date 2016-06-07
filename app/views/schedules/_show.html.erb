@@ -1,0 +1,54 @@
+<h2><%= (@style ? "#{@style} classes" : 'All Classes') + ' on ' + day_of_week(params[:wday]) %></h2>
+<% if @courses.any? %>
+  <% @courses.each do |time, courses| %>
+    <% courses.each do |course| %>
+      <div id="preview" class="schedule <%= cycle("even", "odd") %>">
+        <% if current_user %><%= link_to "Edit", edit_provider_studio_course_path(@city, @region_abbr, @provider, @studio, course), :class => "editSchedule" %><% end %>
+        <div id="timing">
+          <p>
+            <% if time[:start] %>
+              <strong><%= Time.at(time[:start] * 60).utc.strftime("%l:%M%p") %></strong>
+              <span class="subtle"><%= pluralize(time[:end] - time[:start], "minute") %></span>
+            <% end %>
+          </p>
+        </div>
+
+        <div id="details">
+          <p>
+            <strong><%= course.name -%></strong>
+            <span class="subtle"><%= course.room_name -%> (<%= course.room_temperature_name -%>)</span>
+          </p>
+        </div>
+
+        <div id="instructor">
+          <p><strong><%= course.assignments.first ? course.assignments.first.staff_member.name(admin?) : '' %></strong> <span class="subtle"></span></p>
+        </div>
+        <p style="clear: left;"></p>
+        <%if time[:label]%>
+          <p style="margin: 0 0 5px 0; background: white; height: 17px; line-height: 17px;"><%= time[:label] %></p>
+        <%end%>
+      </div>
+    <%end%>
+  <% end %>
+<% else %>
+  <%if @available_days%>
+    <p><b><%=@style ? "#{@style} classes": 'Classes'%> can be found on
+        <%@available_days.each do |day|%>
+          <%= link_to day_of_week(day), schedules_path(@city, @region_abbr, :wday => day, :filter => params[:filter], :style => params[:style]) %>,
+        <%end%>
+      </b></p>
+  <%else%>
+    <p><b>No classes</b></p>
+  <%end%>
+<% end %>
+<script type="text/javascript" charset="utf-8">
+  $(document).ready(function() {
+    // Schedule
+    $(".schedule").mouseenter(function(){
+      $(this).find(".editSchedule").show();
+    })
+    $(".schedule").mouseleave(function(){
+      $(this).find(".editSchedule").hide();
+    })
+  });
+</script>

@@ -1,0 +1,29 @@
+<%= form_for [@provider, @studio, @course, @occurrence, @assignment], :remote => true do |f| %>
+	<p><label>First name <%= text_field_tag 'assignment[staff_member][first_name]' -%></label></p>
+	<p><label>Last name <%= text_field_tag 'assignment[staff_member][last_name]' -%></label></p>
+	
+	<p><%= f.submit 'Save' -%> or <%= link_to_function 'cancel', "$('form#new_assignment').detach()" -%></p>
+<% end %>
+
+<%# 
+The above form is added to the new course form via ajax.
+
+Unfortunately, rails.js doesn't seem to work with
+ajax events that fire on elements which have themselves
+been added via ajax. This means that we have to hand-code
+an ajax request for the above form and add the success callback. 
+-%>
+<script type="text/javascript" charset="utf-8">
+	$('form#new_assignment').bind('submit', function() {			
+		var url  = $(this).attr('action');
+		var data = $(this).serialize();
+
+		$.post(url, data, function(content, status, xhr) {
+				$('#new_assignment').detach();				
+				$('#assigned_instructors').html(content);
+			}
+		);
+		
+		return false;
+	});
+</script>

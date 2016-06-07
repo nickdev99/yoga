@@ -1,0 +1,4 @@
+<h2>Edit room</h2>
+<%= form_for :room, :url => provider_studio_room_path(@city, @region_abbr, @provider, @studio, @room), :html => {:method => :put} do |f| %>
+  <%= render :partial => "content", :locals => {:f => f}%>
+<%end%>

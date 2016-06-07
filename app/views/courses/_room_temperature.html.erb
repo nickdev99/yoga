@@ -1,0 +1,3 @@
+<% temperatures.each do |temp| %>
+  <li><%= radio_button :course, :room_temperature_id, temp.id -%> <%= label_tag "course_room_temperature_id_#{temp.id}", temp.name -%></li>
+<% end %>

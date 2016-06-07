@@ -1,0 +1,41 @@
+<div id="provider">
+  <div style="float: left; max-width: 500px;">
+    <h2><%= @provider.name -%> <% if current_user %><%= link_to "Admin", provider_studios_path(@city, @region_abbr, @provider), :class => 'github' %><% end %></h2>
+  </div>
+  <div class="location">
+    <div class="address">
+      <%=@studio.address%>, <%= @studio.area.city %>
+    </div>
+    <div class="phone">
+      <%=@studio.phone_number %>
+    </div>
+  </div>
+  <div class="clear"></div>
+  <p id="studios">
+    <% @studios.each do |studio| -%>
+      <%= link_to studio.name, schedules_path(@city, @region_abbr, @provider, studio, {:wday => params[:wday]}),:class => ('current' if studio == @studio) -%>
+    <% end %>
+  </p>
+
+  <h3 id="schedule_name"><%= @studio.name -%> Schedule <% if current_user %><%= link_to "Add Event", new_provider_studio_course_path(@city, @region_abbr, @provider, @studio), :class => 'github' %><% end %></h3>
+</div>
+
+<div id="schedule_dates">
+  <p>
+    <% (0..6).to_a.each do |n| %>
+      <%= link_to_schedule_date n.days.from_now -%>
+    <% end %>
+  </p>
+</div>
+
+<div id="steps">
+<%#= link_to 'All Instructors' -%>
+  <ul id="filters">
+    <%= filter_link_to 'All Classes', schedules_path(@city, @region_abbr, @provider, @studio, :wday => params[:wday]), !params[:filter] -%>
+    <%= render :partial => 'filters' %>
+  </ul>
+</div>
+
+<div id="course_form_container">
+  <%= render :partial => 'schedules/show' -%>
+</div>

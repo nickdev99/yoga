@@ -1,0 +1,9 @@
+gentle:
+  id: 1
+  name: Gentle
+moderate:
+  id: 2
+  name: Moderate
+vigorous:
+  id: 3
+  name: Vigorous

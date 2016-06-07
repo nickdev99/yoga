@@ -1,0 +1,10 @@
+$('#new_room').dialog('close');
+<%if params[:is_course]%>
+  $('#rooms').html('<%= escape_javascript(render :partial => 'courses/new_room', :locals => {:rooms => @studio.rooms}) %>');
+  $('#rooms').buttonset();
+<%else%>
+  $.post('assign_room', {course_id: $('#course_id').val(), room_id: '<%=@room.id%>'});
+  $('#rooms').html('<%= escape_javascript(render :partial => 'courses/new_room', :locals => {:rooms => @studio.rooms}) %>');
+  $('#rooms').buttonset();
+<%end%>
+$('#loader_' + $('#course_id').val()).fadeOut(1600);

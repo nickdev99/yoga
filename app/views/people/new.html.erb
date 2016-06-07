@@ -1,0 +1,31 @@
+<script>
+  $(function(){
+    $('#email').autocomplete({
+      autoFocus: true,
+      source: 'email_search',
+      select: function(event, ui) {
+        $('#first_name').attr('value', ui.item.first_name);
+        $('#last_name').attr('value', ui.item.last_name);
+      }
+    });
+    $('#first_name').autocomplete({
+      autoFocus: true,
+      source: 'first_name_search',
+      select: function(event, ui) {
+        $('#email').attr('value', ui.item.email);
+        $('#last_name').attr('value', ui.item.last_name);
+      }
+    });
+    $('#last_name').autocomplete({
+      autoFocus: true,
+      source: 'last_name_search',
+      select: function(event, ui) {
+        $('#first_name').attr('value', ui.item.first_name);
+        $('#email').attr('value', ui.item.email);
+      }
+    });
+  });
+</script>
+<%= form_for(:user, :url => provider_people_path(@city, @region_abbr, @provider), :html => {:method => :post}) do |f|%>
+  <%= render :partial => 'new_person', :locals => {:assign_instructor => nil, :f => f} %>
+<%end%>

@@ -1,0 +1,9 @@
+warm:
+  id: 1
+  name: Warm
+reduced_hot:
+  id: 2
+  name: Reduced Hot
+hot:
+  id: 3
+  name: Hot

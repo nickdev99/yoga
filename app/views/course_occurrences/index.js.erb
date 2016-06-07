@@ -1,0 +1,17 @@
+<% @course.occurrences.each do |occurrence| %>
+	<h3>
+		<%= human_occurrence_date(occurrence) -%> 
+		<%= link_to 'remove', [@provider, @studio, @course, occurrence],
+		 						:method => :delete,
+								:remote	=> true,
+								:class	=> 'destroy_occurrence'
+								-%>
+	</h3>
+	
+	<p>
+		<label>Start &amp; end time 
+			<%= time_span_field_for(occurrence) -%>
+		</label>
+		<%= occurrence_length_tag(occurrence) -%>
+	</p>
+<% end %>

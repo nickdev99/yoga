@@ -1,0 +1,11 @@
+# John is not assigned to any courses
+john:
+  id: 1
+  first_name: John
+  last_name: Smith
+
+# Bob is assigned to courses(:hatha)
+bob:
+  id: 2
+  first_name: Bob
+  last_name: Jones

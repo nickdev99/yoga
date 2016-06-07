@@ -1,0 +1,37 @@
+<%= form_for [@provider, @studio, @course], 
+						 :remote 	=> true, 
+						 :html 		=> {:id => 'course_form'} do |f| 
+						 %>
+	<!-- course_instructors -->	
+	<fieldset id="course_instructors">
+		<%= hidden_field_tag :next_step, 5 -%>	
+		
+		<legend>Instructors, Assistants, Facilitators</legend>
+	
+		<p>
+			<%= select_tag :instructor_id, 
+					options_from_collection_for_select(@provider.staff_members, :id, :name),
+					:id => 'instructor_id' -%>
+				
+			<%= link_to 'Add', [@provider, @studio, @course, @course.first_occurrence, :assignments], 
+									:id 		=> 'add_instructor',
+									:remote => true -%> &mdash; 
+			<%= link_to 'New Person', [:new, @provider, @studio, @course, @course.first_occurrence, :assignment], 
+									:remote => true,
+									:id     => 'add_person' -%>
+		</p>
+	
+		<div id="new_person_form">
+		
+		</div>
+	
+		<div id="assigned_instructors">
+		
+		</div>
+	
+		<p><label><%= f.check_box :staff_tba -%> TBA &mdash; to be announced</label></p>
+		<p><label><%= f.check_box :rotational_instructor -%> Rotational instructor</label></p>			
+	</fieldset>
+	
+	<%= f.submit 'Save & go to next step' -%> or <%= link_to 'go back a step', nil, :id => 'step_back' -%>
+<% end %>

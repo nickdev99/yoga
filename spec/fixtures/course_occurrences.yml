@@ -1,0 +1,7 @@
+# Recurring
+first:
+  id: 1
+  course_id: 1
+  week_day: 1
+  time_span: 10am to 11am
+  

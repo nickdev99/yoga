@@ -1,0 +1,13 @@
+<h2>Signup</h2>
+
+<p>
+  You will get free exposure to your classes, workshops, and events.<br/>
+  Get excited for ILY's ever-growing community!
+</p>
+<%= resource.errors.any? %>
+
+<% if !params[:user] or resource.errors.any? %>
+  <%= render 'devise/registrations/steps/step_1' %>
+<% else %>
+  <%= render 'devise/registrations/steps/step_2' %>
+<% end %>

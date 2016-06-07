@@ -1,0 +1,126 @@
+<div style="padding-bottom:10px;">
+  <span style="font-size:14px; font-weight:bold;">&nbsp;<%=name_day_of_week(day_of_week)%> &nbsp;</span>
+
+  <div style="font-size:11px; color:grey;" class="dropdown pull-right">
+    <span class="dropdown-toggle  cursor_hover" id="dLabel1" role="button" data-toggle="dropdown" data-target="#" >
+      <%if cookies[:"location_#{day_of_week}"]%>
+          <%= get_city(cookies[:"location_#{day_of_week}"])%>
+      <%else%>
+          all locations
+      <%end%>
+      <b class="caret" style="opacity:0.4"></b>
+    </span>
+    <%unless wday_temp.nil?%>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel1">
+          <%a = []%>
+          <%wday_temp.each do |course|%>
+              <% unless a.include? get_city(course['studio_id'])%>
+                  <% a << get_city(course['studio_id']) %>
+                  <%if cookies[:"location_#{day_of_week}"].to_s != course['studio_id'].to_s %>
+                    <li><%= link_to get_city(course['studio_id']), widget_path('location', course['studio_id'] ,course['week_day']) %></li>
+                  <% end %>
+              <% end %>
+          <%end%>
+          <%unless cookies[:"location_#{day_of_week}"].nil?%>
+              <li><%= link_to 'all locations', widget_path('location', 'all_locations', day_of_week) %></li>
+          <%end%>
+        </ul>
+    <% end %>
+  </div>
+
+  <div style="font-size:11px; color:grey;" class="dropdown pull-right">
+    <span class="dropdown-toggle  cursor_hover" id="dLabel2" role="button" data-toggle="dropdown" data-target="#" >
+      <%if cookies[:"instructor_#{day_of_week}"]%>
+          <%= temp=cookies[:"instructor_#{day_of_week}"] %>
+      <%else%>
+          all instructors
+      <%end%>
+      <b class="caret" style="opacity:0.4"></b>&nbsp;&nbsp;|&nbsp;&nbsp;
+    </span>
+    <%unless wday_temp.nil?%>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel2">
+          <%a = []%>
+          <%wday_temp.each do |course|%>
+              <% unless a.include? course['instructor'] || course['instructor']==temp  %>
+                  <% a << course['instructor'] %>
+                  <%if cookies[:"instructor_#{day_of_week}"].to_s != course['instructor'].to_s %>
+                    <li><%= link_to course['instructor'], widget_path('instructor',course['instructor'] ,course['week_day']) %></li>
+                  <% end %>
+              <% end %>
+          <%end%>
+          <%unless cookies[:"instructor_#{day_of_week}"]=='all_instructors' || cookies[:"instructor_#{day_of_week}"].nil?%>
+              <li><%= link_to 'all instructors', widget_path('instructor', 'all_instructors', day_of_week) %></li>
+          <%end%>
+        </ul>
+    <%end%>
+  </div>
+
+  <div style="font-size:11px; color:grey;" class="dropdown pull-right">
+    <span class="dropdown-toggle cursor_hover" id="dLabel3" role="button" data-toggle="dropdown" data-target="#" >
+      <%if cookies[:"coursename_#{day_of_week}"]%>
+          <%=temp1 = cookies[:"coursename_#{day_of_week}"] %>
+      <%else%>
+          all classes
+      <%end%>
+      <b class="caret" style="opacity:0.4"></b>&nbsp;&nbsp;|&nbsp;&nbsp;
+    </span>
+    <%unless wday_temp.nil?%>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel3">
+          <%a = []%>
+          <%wday_temp.each do |course|%>
+              <%unless a.include? course['name'] && course['name'] == temp1%>
+                  <% a << course['name'] %>
+                  <%if cookies[:"coursename_#{day_of_week}"].to_s != course['name'].to_s %>
+                    <li><%= link_to course['name'], widget_path('name', course['name'] ,course['week_day'])%></li>
+                  <%end%>
+              <%end%>
+          <%end%>
+          <%unless cookies[:"coursename_#{day_of_week}"]=='all_courses' || cookies[:"coursename_#{day_of_week}"].nil?%>
+              <li><%= link_to 'all courses', widget_path('name', 'all_courses', day_of_week) %></li>
+          <%end%>
+        </ul>
+    <%end%>
+  </div>
+        <table class="table" style="background:#ffffff; width: 100%;" id="schedule_day" >
+          <tbody>
+              <%unless wday.nil?%>
+                  <%wday.each do |course|%>
+                      <%form_tag widget_settings_path(course['id']), :remote => true, :method => 'get' do %>
+                          <tr>
+                            <td>
+                              <strong><%= Time.at(course['start_time'] * 60).utc.strftime("%l:%M%p") %></strong>
+                            </td>
+                            <td>
+                                <span style="color:grey; font-size:13px;">
+                                    <%= course['end_time'] - course['start_time'] %>mins
+                                </span>
+                            </td>
+                            <td>
+                              <%= get_city(course['studio_id'])%>
+                            </td>
+                            <td>
+                              <strong><%= course['name'] %></strong>
+                            </td>
+                            <td><%= course['instructor'] -%></td>
+                            <td style="border-right: solid 1px lightgrey;"><%=RoomTemperature.find_by_id(course['room_temperature_id']).name%></td>
+                            <td>
+                              <span class="pull-right">
+                                <%check=''%>
+                                <%met = 'add'%>
+                                <%query = UserCourse.find_all_by_course_id_and_user_id(course['id'], current_user.id)%>
+                                <%unless query[0].nil?%>
+                                  <%check = 'checked = checked'%>
+                                  <%met = 'del'%>
+                                <% end %>
+                                    <input type="checkbox" name="option1" value="<%=course['id']%>" class="reg" <%=check%>>
+                                    <input type="hidden" name="wday" value="<%=course['week_day']%>">
+                                    <input type="hidden" name="check" value=<%= met%>>
+                              </span>
+                            </td>
+                          </tr>
+                      <%end%>
+                  <%end%>
+              <%end%>
+          <tbody>
+        </table>
+    </div>

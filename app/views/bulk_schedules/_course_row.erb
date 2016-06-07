@@ -1,0 +1,61 @@
+<%if course.id.nil? %>
+  <script>
+    $(function() {
+      $('#new_course').catcomplete({
+        autoFocus: true,
+        source: 'class_search',
+        select: function(event, ui) {
+          if(ui.item.id != null) {
+            $.post('assign_class', { 
+                                    course_id: ui.item.id, 
+                                    week_day: $('#week_day').val(), 
+                                    time_span: $('#time_span_').val(), 
+                                    current_course: 0});
+          }else{
+            $.get('full_edit?class_name=' + $('#new_course').val() + '&week_day=' + $('#week_day').val() + '&time_span=' + $('#time_span_').val());
+          }
+        }
+      });
+      $('.loader').fadeOut(1600);
+    });
+  </script>
+<%end%>
+<div class="classes_row">
+  <div class="classes_fields">
+    <div class="time_span"><%= text_field_tag :time_span, course.time_span, :id => "time_span_#{course.id}"%> <span id="time_in_minutes_<%=course.id%>"><%= Timespan.new(course.time_span).length_in_minutes %></span></div>
+    <div class="classes_value"><%= text_field_tag :name, course.name, :id => course.id ? 'course' : 'new_course', :class => 'class_name'%> </div>
+    <div class="classes_value"><%= text_field_tag :instructor, course.assignments.blank? ? nil : course.assignments.last.staff_member.name(admin?), :id => "instructor_#{course.id}" %></div>
+    <div class="classes_value"><%= text_field_tag :room, course.room ? course.room.name : nil, :id => "room_#{course.id}"%></div>
+    <div class="loader" id="loader_<%=course.id%>"><%= image_tag 'ajax-loader.gif' %></div>
+  </div>
+  <div class="more_info">
+    <div class="start_end">
+      Start Immediately<br>
+      Expire Never
+    </div>
+    <div class="levels">
+      Difficulty Level <%= get_difficulty_level course%><br>
+      Practice Level <% course.practice_levels %> <%= get_practice_level course%>
+    </div>
+    <div class="styles">
+      <%= course.styles.count %> styles set
+    </div>
+    <div class="instructor">
+      <% if course.assignments.count == 0 %>
+        no instructors assigned
+      <% elsif course.assignments.count > 0 %>
+        <%= course.assignments.count %> assigned<br>
+        <%= link_to "clear all", course_assignments_remove_path(@city, @region_abbr, @provider, @studio, course.id), :confirm => "Are you sure?", :method => :post %>
+      <%end%>
+    </div>
+    <div class="temperature">
+      <%= course.room_temperature_name %>
+    </div>
+    <div class="full_edit">
+      <%if course.id%>
+        <%= link_to 'full edit', "full_edit?course_id=#{course.id}", :class => 'github', :remote => true %>
+        <%= link_to 'x', provider_studio_bulk_schedule_path(@city, @region_abbr, @provider, @studio, course.id), :class => 'github', :method => :delete, :confirm => "Are you sure that you want to delete #{course.name} class?", :remote => true %>
+      <%end%>
+    </div>
+  </div>
+</div>

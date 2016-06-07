@@ -1,0 +1,13 @@
+<script>
+  $(function(){
+    $(".rooms").change(function(){
+      $.get('/room_temp/' + $(this).attr('id').split("_")[3], function(data){
+        $('#room_temperature').html(data);
+        $( "#room_temperature" ).buttonset()
+      });
+    });
+  });
+</script>
+<% rooms.each do |room| %>
+  <li><%= radio_button :course, :room_id, room.id, :class => 'rooms' -%><%= label_tag "course_room_id_#{room.id}", room.name -%></li>
+<%end%>

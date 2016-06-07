@@ -1,0 +1,11 @@
+<ul>
+	<li>
+		Instructor Name
+		<%# todo:1: replace these with real ids %>
+		<label><%= check_box_tag :assignment_role_id, 1 -%> Instructor</label>
+		<label><%= check_box_tag :assignment_role_id, 2 -%> Assistant</label>
+		<label><%= check_box_tag :assignment_role_id, 3 -%> Facilitator</label>
+		
+		<%= link_to 'remove' -%>
+	</li>
+</ul>

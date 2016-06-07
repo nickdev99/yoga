@@ -1,0 +1,41 @@
+<table class="table" style="background:#ffffff; width: 100%;" id="schedule_day" >
+  <tbody>
+      <%wday.each do |course|%>
+          <%form_tag widget_settings_path(course['id']), :remote => true, :method => 'get' do %>
+              <tr>
+                <td>
+                  <strong><%= Time.at(course['start_time'] * 60).utc.strftime("%l:%M%p") %></strong>
+                </td>
+                <td>
+                                <span style="color:grey; font-size:13px;">
+                                    <%= course['end_time'] - course['start_time'] %>mins
+                                </span>
+                </td>
+                <td>
+                  <%= get_city(course['studio_id'])%>
+                </td>
+                <td>
+                  <strong><%= course['name'] %></strong>
+                </td>
+                <td><%= course['instructor'] -%></td>
+                <td style="border-right: solid 1px lightgrey;"><%=RoomTemperature.find_by_id(course['room_temperature_id']).name%></td>
+                <td>
+                  <span class="pull-right">
+                    <%check=''%>
+                    <%met = 'add'%>
+                    <%query = UserCourse.find_all_by_course_id_and_user_id(course['id'], current_user.id)%>
+                    <%unless query[0].nil?%>
+                      <%check = 'checked = checked'%>
+                        <%met = 'del'%>
+                    <% end %>
+                        <input type="checkbox" name="option1" value="<%=course['id']%>" class="reg" <%=check%>>
+                        <input type="hidden" name="wday" value="<%=course['week_day']%>">
+                        <input type="hidden" name="check" value=<%= met%>>
+                        <input type="hidden" name="practice" value='true'>
+                  </span>
+                </td>
+              </tr>
+          <%end%>
+      <%end%>
+  <tbody>
+  </table>

@@ -1,0 +1,21 @@
+<div id="provider">
+  <h2 class ="welcome" style="float:right">All Studios. All Classes</h2><h2 class ="welcome">Welcome to ILY</h2>
+  <h3 id="schedule_name"><%= @area.city.upcase %> YOGA INSTRUCTORS</h3>
+</div>
+
+<div id="steps">
+  <ul id="filters">
+    <%= filter_link_to "All Instructors", instructors_path(@city, @region_abbr), !params[:id] %>
+    <% @styles.each do |s| %>
+      <%unless s.courses.blank?%>
+        <%= filter_link_to s.name, instructor_path(@city, @region_abbr, s), params[:id] == s.cached_slug %>
+      <%end%>
+    <% end %>
+  </ul>
+</div>
+
+<% if params[:style_id] %>
+  <%= render :partial => 'filtered' %>
+<% else %>
+  <%= render :partial => 'content' %>
+<% end %>

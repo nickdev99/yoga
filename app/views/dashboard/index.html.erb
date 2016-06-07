@@ -1,0 +1,83 @@
+<h2>Welcome <% if current_user %><%= current_user.first_name %> <%= link_to('Invite Instructors', invitations_path, :class => 'github') %><% end %></h2>
+
+<p>PERMISSIONS: You currently have permission to add new providers, add studios to providers, add rooms to studios, and add events/classes to any studio.</p>
+
+<p>Quick Stats - <%= @instructors %> instructors, <%= @users %> users</p>
+
+<h2>Providers List</h2>
+<%unless @studios.blank? %>
+  <ul>
+    <h3 style="font-size: 14px; font-weight: bold; color: #666;">Studios</h3>
+    <% @studios.each do |p| %>
+      <li><%= p.name %> <%= link_to "Admin", provider_studios_path(@city, @region_abbr, p), :class => 'github' %> <% if p.studios.count > 0 %>
+          <%= link_to "Bulk Edit Schedule",  provider_studio_bulk_schedules_path(@city, @region_abbr, p, p.studios.first), :class => 'github'%>
+          <%= link_to "People", provider_people_path(@city, @region_abbr, p), :class => 'github' %>
+          <%= link_to "View Schedule", schedules_path(@city, @region_abbr, p, p.studios.first), :class => 'github' %><% end %>
+          <% if current_user.admin? && p.studios.count == 0 %>
+            <%= link_to 'x', provider_destroy_path(@city, @region_abbr, p), :class => 'github', :method => :delete, :confirm => "Are you sure?" %>
+          <% end %>
+      <br><br></li>
+    <% end %>
+  </ul>
+<%end%>
+<%unless @non_studios.blank? %>
+  <ul>
+    <h3 style="font-size: 14px; font-weight: bold; color: #666;">Non-Studios</h3>
+    <% @non_studios.each do |p| %>
+      <li><%= p.name %> <%= link_to "Admin", provider_studios_path(@city, @region_abbr, p), :class => 'github' %> <% if p.studios.count > 0 %>
+          <%= link_to "Bulk Edit Schedule",  provider_studio_bulk_schedules_path(@city, @region_abbr, p, p.studios.first), :class => 'github'%>
+          <%= link_to "People", provider_people_path(@city, @region_abbr, p), :class => 'github' %>
+          <%= link_to "View Schedule", schedules_path(@city, @region_abbr, p, p.studios.first), :class => 'github' %><% end %>
+          <% if current_user.admin? && p.studios.count == 0 %>
+            <%= link_to 'x', provider_destroy_path(@city, @region_abbr, p), :class => 'github', :method => :delete, :confirm => "Are you sure?" %>
+          <% end %>
+      <br><br></li>
+    <% end %>
+  </ul>
+<%end%>
+<%unless @other_providers.blank? %>
+  <ul>
+    <h3 style="font-size: 14px; font-weight: bold; color: #666;">Other Providers</h3>
+    <% @other_providers.each do |p| %>
+      <li>
+        <%= p.name %> <%= link_to "Admin", provider_studios_path(@city, @region_abbr, p), :class => 'github' %>
+          <% if p.studios.count > 0 %>
+            <%= link_to "Bulk Edit Schedule",  provider_studio_bulk_schedules_path(@city, @region_abbr, p, p.studios.first), :class => 'github'%>
+            <%= link_to "People", provider_people_path(@city, @region_abbr, p), :class => 'github' %>
+            <%= link_to "View Schedule", schedules_path(@city, @region_abbr, p, p.studios.first), :class => 'github' %>
+          <% end %>
+          <% if current_user.admin? && p.studios.count == 0 %>
+            <%= link_to 'x', provider_destroy_path(@city, @region_abbr, p), :class => 'github', :method => :delete, :confirm => "Are you sure?" %>
+          <% end %>
+      <br><br></li>
+    <% end %>
+  </ul>
+<%end%>
+<%unless @stores.blank? %>
+  <ul>
+    <h3 style="font-size: 14px; font-weight: bold; color: #666;">Stores</h3>
+    <% @stores.each do |p| %>
+      <li><%= p.name %> <%= link_to "Admin", provider_studios_path(@city, @region_abbr, p), :class => 'github' %> <% if p.studios.count > 0 %>
+          <%= link_to "Bulk Edit Schedule",  provider_studio_bulk_schedules_path(@city, @region_abbr, p, p.studios.first), :class => 'github'%>
+          <%= link_to "People", provider_people_path(@city, @region_abbr, p), :class => 'github' %>
+          <%= link_to "View Schedule", schedules_path(@city, @region_abbr, p, p.studios.first), :class => 'github' %><% end %><br><br></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<%= link_to "Create New Provider", new_provider_path(@city, @region_abbr), :class => 'github'  %><br/><br/>
+Note: If you want to add a new location to an existing studio / provider, look for the studio's <%= link_to "Admin", "#", :class => 'github' %> button above first and click the <%= link_to "Add New Location", "#", :class => 'github' %> button.<br/><br/>
+
+<h2>Help - What does each button mean?</h2>
+<p>
+  <%= link_to "View Schedule", "#", :class => 'github' %> - View current studio and access to <%= link_to "Add Event", "#", :class => 'github' %> button to add a recurring class, single or multiple-day events. To modify a class/event via the studio's schedule, simply find the event on the schedule or Workshops page. When you put your mouse-over the listing, click the 'Edit' link that appears.
+</p>
+<p>
+  <%= link_to "People", "#", :class => 'github' %> - View people associated with a studio and what their roles are.
+</p>
+<p>
+  <%= link_to "Bulk Edit Schedule", "#", :class => 'github' %> - Quickly add new classes or update existing recurring classes.
+</p>
+<p>
+  <%= link_to "Admin", "#", :class => 'github' %> - Update studio details, add rooms to a studio, add new studio locations to a provider
+</p>

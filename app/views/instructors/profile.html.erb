@@ -1,0 +1,53 @@
+<div id="provider" style="border: none">
+  <div class="photo" style="float: left; margin-right: 10px;">
+    <%= image_tag @instructor.avatar.url(:small) unless @instructor.avatar.path(:small).nil? %>
+  </div>
+  <div>
+    <h2><%= @instructor.name -%></h2>
+  </div>
+  <span style="color: #999"><%= @instructor.staff_member.courses.where('event_type = "recurring"').count %> classes per week</span><br/>
+  <%unless @teaching.blank?%>
+  <span style="color: #999">Currently teaching - </span>
+    <% @teaching.each do |style| %>
+    <span><%= link_to style.name, home_path(@city, @region_abbr, style), :style => "color: #999;" %>, </span>
+  <%end%>
+<%end%>
+  <p id="studios">
+  <% @areas.each do |area| -%>
+    <%= link_to area.city, {:controller => :instructors, :action => :profile, :city => area.city_slug, :region_abbr => area.region_abbr }, :class => ('current' if area == @area) -%>
+  <% end %>
+  </p>
+  <div class="clear"></div>
+</div>
+<%unless @workshops.blank? %>
+<div class="workshops">
+  <h2>Workshops</h2>
+  <% @workshops.each do |workshop| %>
+    <div style="color: #999"><%=workshop.date.strftime("%b %d")%></div>
+    <% provider = workshop.course.studio.provider %>
+    <div><%= link_to workshop.course.name, edit_provider_studio_course_path(@city, @region_abbr, provider, workshop.course.studio, workshop.course), :style => 'color: black;' %></div>
+    <div style="color: #999; padding-bottom: 15px;">at <%= link_to provider.name, schedules_path(@city, @region_abbr, provider, workshop.course.studio), :style => 'color: #999' %> (<%= workshop.course.studio.name %>)</div>
+  <%end%>
+</div>
+<%end%>
+<% @courses.each do |studio, courses| %>
+<div class="instructor_info"><h2>
+    <div class="instructor_title"><%= studio.provider.name -%> (<%= studio.name -%>)</div>
+    <div style="display: inline-block; padding-left: 40px;">
+      <div class="address" style="font-size: 12px; font-weight: normal;">
+        <%=studio.address%>
+        <%= unless studio.address.blank?
+          ', '
+        end%>
+        <%= studio.area.city %>
+      </div>
+      <div class="phone">
+        <%=studio.phone_number %>
+      </div>
+    </div>
+  </h2>
+</div>
+<div style="width: 465px;">
+  <%= render :partial => 'show', :locals => {:courses => courses} -%>
+</div>
+<%end%>

@@ -1,0 +1,7 @@
+hatha:
+  id: 1
+  studio_id: 1
+  room_id: 1
+  event_type: recurring
+  week_days: [1] # monday
+  name: Hatha Yoga For Dummies

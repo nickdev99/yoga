@@ -1,0 +1,23 @@
+<div id="course_form_container">
+  <% unless @style%><h2 style="margin-left: 10px;"><%= 'All Instructors'%></h2><%end%>
+  <ul class="studios_list">
+    <% @instructors.each do |i| %>
+      <li class="<%= cycle("even", "odd") %>">
+        <a href="<%= '/instructors/' + i.cached_slug + '/' + @city + '/' + @region_abbr %>" style="padding: 0">
+          <div class="thumbnail"><%= image_tag i.avatar.url(:small) unless i.avatar.path(:small).nil?%></div>
+          <div class="instructor_name">
+            <span class='name'>
+              <strong><%= i.name(admin?) %></strong>
+            </span>
+            <% if i.staff_member && i.staff_member.courses.where('event_type = "recurring"').count > 0 %>
+              <span class='address' style='color:#999'><%= i.staff_member.courses.where('event_type = "recurring"').count %> classes per week</span>
+            <% else %>
+              <span class='address' style='color:#999'>No classes</span>
+            <% end %>
+              <span class="address" style='color:#999'><%=@city.capitalize%></span>
+          </div>
+        </a>
+      </li>
+    <% end %>
+  </ul>
+</div>

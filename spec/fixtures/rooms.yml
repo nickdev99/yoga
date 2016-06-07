@@ -1,0 +1,5 @@
+first:
+  id: 1
+  name: Front room
+  studio_id: 1  
+  capacity: 25

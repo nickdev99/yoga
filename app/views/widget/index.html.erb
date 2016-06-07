@@ -1,0 +1,178 @@
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+  <title>I LIVE YOGA</title>
+  <%= javascript_include_tag 'jquery-latest.min.js' -%>
+  <%= javascript_include_tag 'jquery.cookie.js' -%>
+  <%= stylesheet_link_tag 'bootstrap.min' %>
+  <%= stylesheet_link_tag 'widget' %>
+  <%= javascript_include_tag 'bootstrap.min.js' -%>
+</head>
+<body data-spy="scroll" data-target="navbar-inner" data-offset="50" data-twttr-rendered="true">
+    <div class="navbar">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="/" style="font-family: 'Syncopate',sans-serif;"> I Live Yoga</a>
+                <form class="navbar-search">
+                    <input class="search-query span2 pull-right" placeholder="Search" type="text">
+                </form>
+
+                <ul class="nav pull-right">
+                    <li>
+                    <a class="dropdown-toggle  cursor_hover" id="dLabel4" role="button" data-toggle="dropdown" data-target="#" >
+                          <%=current_user.username%>
+                      <b class="caret" style="opacity:0.4"></b>
+                    </a>
+                      <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel4">
+                        <!--<li class=""> <a href="calendar.html">Your Profile</a> </li>-->
+                        <!--<li class=""> <a href="./mail.html">Messages</a> </li>-->
+                        <!--<li class=""> <a href="./notifications.html">Notifications</a></li>-->
+                        <!--<li class=""> <a href="widget-customization-tool.html">Widget Customization Tool</a> </li>-->
+                        <li class=""> <%=link_to 'Settings', "profiles/#{current_user.username}/edit" %></li>
+                        <!--<li class=""> <a href="#">Permissions</a></li>-->
+                        <li class=""> <%=link_to 'Signout', 'users/sign_out' %></li>
+                      </ul>
+                    </li>
+                    <li class="divider-vertical"></li>
+                    <li class="show-calendar"><a href="#"> <i class="icon-calendar"></i></a></li>
+                    <li class="divider-vertical"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+          <div class="span12">
+              <div class="btn-group pull-right">
+                  <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#">
+                      Select Existing Widget (3)
+                      <span class="caret"></span>
+                  </a>
+                  <ul class="dropdown-menu">
+                      <li>das</li>
+                  </ul>
+              </div>
+              <div class="pull-right"><a href="">Create New Schedule Widget</a> or &nbsp; </div>
+              <ul class="nav nav-tabs">
+                <li class="active"><a href="schedule-widget-customizer.html">Schedule Widget</a></li>
+              </ul>
+            <hr>
+          </div>
+
+            <div class="span12">
+                <div class="" style="font-size:13px; padding-bottom:33px;">
+                    <span style="padding-bottom:8px; border-bottom: dotted 1px grey;">
+                        <% (0..6).to_a.each do |n| %>
+                            <span id='<%= n %>' class="days_of_week cursor_hover">
+                               <span><%= link_to name_day_of_week(n),  widget_path(:wday => n) %></span>
+                            </span>
+                            <span style="color:lightgrey;">|</span>
+                        <% end %>
+                        <span class="pull-right">
+                            <span style="padding-bottom:8px; border-bottom: dotted 1px grey; font-size:12px;" class="practice">
+                              <span id="my_practice"><%= link_to 'My Practice',  widget_path(:practice => true) %>
+                                <span class="badge" id="n_practice" style="background:#00BCD1;"><%=UserCourse.find_all_by_user_id(current_user.id).length%></span>&nbsp;
+                              </span>
+                              <span style="color:lightgrey;" >|</span>
+                              <span class="show-calendar">
+                                &nbsp;View Month
+                                <i class="icon-calendar"></i>&nbsp;
+                              </span>
+                            </span>
+                        </span>
+                    </span>
+
+                </div>
+              <div id="schedule_day">
+                    <% (0..6).to_a.each do |n| %>
+                        <div class="schedule-table" id="schedule-<%=n%>" style="display: <%= params[:wday].to_s == n.to_s ? 'block' : 'none'%>;">
+                          <%= render :partial => 'schedule_day', :locals => {:wday => @mass_days[n][:wday], :wday_temp => @mass_days[n][:wday_temp],:day_of_week=> n} %>
+                        </div>
+                    <%end%>
+                    <div class="schedule-table" id="schedule-mypractice" style="display:<%=params[:practice] ? 'block' : 'none' %> ;">
+                      <%= render :partial => 'practice', :locals => {:wday => @practice , :practice => true} %>
+                    </div>
+              </div>
+            </div>
+      </div>
+
+      <div class="modal hide" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+          <h3 id="myModalLabel">Modal header</h3>
+        </div>
+        <div class="modal-body">
+          <%= render :partial => 'full-calendar'%>
+        </div>
+        <div class="modal-footer">
+        </div>
+      </div>
+
+    </div>
+
+     <script type="text/javascript" charset="utf-8">
+        $(function() {
+            var nday = $.cookie('wday');
+            var day = new Date();
+            if (nday == null)
+                nday = day.getDay();
+
+
+            <%unless params[:wday]%>
+                $('#my_practice').addClass('selected');
+                $("#schedule-mypractice").show(0);
+
+            <%else%>
+                $("#"+nday).addClass('selected');
+            <%end%>
+
+            $(".days_of_week").click(function(){
+                var d = $(this).attr('id');
+                $('.schedule-table').hide(0);
+                $("#schedule-" + d).show(0);
+                $(".days_of_week").removeClass('selected');
+                $('#my_practice').removeClass('selected');
+                $(this).addClass('selected');
+            });
+
+            $('.dropdown-toggle').dropdown()
+
+            $('.show-calendar').click(function(){
+                $('#myModal').modal().css({
+                    width: 'auto',
+                    height: 'auto',
+                    'margin-left': function () {
+                        return -($(this).width() / 2);
+                    },
+                    'margin-top': function () {
+                        return -($(this).height() / 2);
+                    }
+                });
+            })
+
+            $('#my_practice').click(function() {
+                var d = $(this).attr('id');
+                $('.schedule-table').hide(0);
+                $("#schedule-mypractice").show(0);
+                $(".days_of_week").removeClass('selected');
+                $('#my_practice').addClass('selected');
+            })
+
+            $('.reg').click(function() {
+                var ncheck = parseInt($('#n_practice').text(), 10);
+                if ($(this).attr('checked')){
+                    ncheck++
+                }
+                else{
+                    ncheck--
+                }
+                $('#n_practice').text(ncheck)
+                $(this.form).submit();
+            });
+        });
+    </script>
+
+</body>
+</html>
+
+

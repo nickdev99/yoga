@@ -1,0 +1,21 @@
+<h2><%= @studio.name -%> <%= @studio.address %></h2>
+
+<h3>Rooms</h3>
+
+<ul> 
+	<% @studio.rooms.each do |room| %>
+		<li><%= room.name -%></li>
+	<% end %>
+</ul>
+
+<p><%= link_to 'Add a room', [:new, @provider, @studio, :room] -%></p>
+
+<h3>Classes</h3>
+
+<ul>
+	<% @studio.courses.each do |course| %>
+		<li><%= link_to course.name, schedules_path(@city, @region_abbr, @provider, @studio) %></li>
+	<% end %>
+</ul>
+
+<p><%= link_to 'Add a class', [:new, @provider, @studio, :course] -%></p>

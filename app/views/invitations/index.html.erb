@@ -1,0 +1,11 @@
+<h2>Invite Instructors</h2>
+<p><%=flash[:success]%></p>
+<div>
+  <%=form_for :invitations, :url => invitations_path, :html => {:method => :post} do |f| %>
+    <div class="invite_title">Emails of people to invite (1 email per line)</div>
+    <div class="invitation_emails"><%= text_area_tag :emails, nil, :class => 'message' %></div>
+    <div class="invite_title" style="margin-top: 10px;">Your Personal Message:</div>
+    <div><%=text_area_tag :message, nil, :class => 'message'%></div>
+    <%= f.submit 'Send Invitations'%>
+  <%end%>
+</div>

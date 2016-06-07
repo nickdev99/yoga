@@ -1,0 +1,60 @@
+<script>
+  $(function() {
+    $( "#datepicker" ).datepicker({
+      showOn: "button",
+      buttonImage: "/images/one-pixel.png",
+      buttonImageOnly: true,
+      onSelect: function(dateText, inst)
+      {
+        window.location.href='workshops?selected_date=' + dateText;
+      }
+    });
+  });
+</script>
+<div class="datepicker">
+  <%= hidden_field_tag :datepicker, nil %>
+  <%= link_to 'select date', '#', :onclick => '$( "#datepicker" ).datepicker( "show" ); return false;', :class => 'github' %>
+  &nbsp;or&nbsp;
+  <%=link_to 'show all', workshops_path(@city, @region_abbr, :all => true), :class => 'github'%>
+</div>
+<h2>Workshop Listing</h2>
+<ul class="workshop">
+  <% @workshops.each do |date, occurrences| %>
+    <li>
+      <strong><%= date.strftime("%b %dth %Y") if occurrences.size > 0 && date%></strong>
+      <ul>
+        <% occurrences.each do |o| %>
+          <div class="workshop_event <%= cycle("even", "odd") %>">
+            <div class="edit_event">
+              <%= link_to 'edit', edit_provider_studio_course_path(@city, @region_abbr, o.course.studio.provider,o.course.studio.id,o.course)%>
+            </div>
+            <% instructor = o.course.instructors.first
+            if instructor%>
+              <div class="thumbnail"><%= image_tag instructor.user.avatar.url(:small) unless instructor.user.avatar.path(:small).nil?%></div>
+            <%end%>
+            <div class="event_name"><%=link_to "#{o.course.name} #{worshop_type(o.course)}", workshop_path(@city, @region_abbr, o.course.id), :style => 'color: #333'%>
+              <%provider = o.course.studio.provider
+              studio = o.course.studio
+            %>
+              <div class="event_studio"><%= link_to provider.name, schedules_path(@city, @region_abbr, provider, studio), :style => 'color: #666'%>(<%= link_to studio.name, schedules_path(@city, @region_abbr, provider, studio), :style => 'color: #666' %>), <%= o.course.studio.address %></div>
+              <div class="event_studio">
+                <% o.course.instructors.each do |i|%>
+                <%= link_to i.name, "/instructors/#{i.user.cached_slug}/#{@city}/#{@region_abbr}", :style => 'color: #666'%>,
+                <%end%>
+              </div>
+            </div>
+
+          </div>
+          <div class="clear"></div>
+        <% end %>
+      </ul>
+    </li>
+
+  <% end %>
+  <div class="pagination">
+    <%if params[:date] && params[:date].to_date > Date.today%>
+      <%= link_to 'Back 6 month', workshops_path(@city, @region_abbr, :date => ((params[:date] ? params[:date].to_date : Date.today) - 6.month)), :class => 'github'%>
+    <%end%>
+    <%= link_to 'Next 6 month', workshops_path(@city, @region_abbr, :date => ((params[:date] ? params[:date].to_date : Date.today) + 6.month)), :class => 'github'%>
+  </div>
+</ul>

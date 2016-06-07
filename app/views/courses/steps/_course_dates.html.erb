@@ -1,0 +1,158 @@
+<script>
+  $(function() {
+    var m_names = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+    $( "#course_start_date" ).datepicker({
+      showOn: "button",
+      dateFormat: 'yy-mm-dd',
+      buttonImage: "/images/one-pixel.png",
+      buttonImageOnly: true,
+      onSelect: function(dateText, inst){
+        $('#start_date').text(m_names[inst.selectedMonth] + ' ' + inst.selectedDay);
+      }
+    }
+  );
+    $( "#course_expiry_date" ).datepicker({
+      showOn: "button",
+      dateFormat: 'yy-mm-dd',
+      buttonImage: "/images/one-pixel.png",
+      buttonImageOnly: true,
+      onSelect: function(dateText, inst){
+        $('#expire_date').text(m_names[inst.selectedMonth] + ' ' + inst.selectedDay);
+      }
+    }
+  );
+<% if edit %>
+      $('.time_spans').keyup(function() {
+        var url  	 = '/courses/length',
+        target = $(this).next(),
+        value	 = $(this).val();
+        timeSpanLength (value, target, url);
+      });
+      $('#multiple').find('h3 a').click(function(){
+        $(this).parents('span').remove();
+      })
+<%end%>
+  });
+</script>
+<fieldset id="course_dates">
+  <legend>When</legend>
+  <div id="recurring">
+    <h3>Day of week</h3>
+
+    <ul id="week_days">
+      <li>
+        <%= f.radio_button :week_day, 1 -%>
+        <label for="course_week_day_1">
+					Mon
+        </label>
+      </li>
+      <li>
+        <%= f.radio_button :week_day, 2 -%>
+        <label for="course_week_day_2">
+					Tues
+        </label>
+      </li>
+      <li>
+        <%= f.radio_button :week_day, 3 -%>
+        <label for="course_week_day_3">
+					Wed
+        </label>
+      </li>
+      <li>
+        <%= f.radio_button :week_day, 4 -%>
+        <label for="course_week_day_4">
+					Thur
+        </label>
+      </li>
+      <li>
+        <%= f.radio_button :week_day, 5 -%>
+        <label for="course_week_day_5">
+					Fri
+        </label>
+      </li>
+      <li>
+        <%= f.radio_button :week_day, 6 -%>
+        <label for="course_week_day_6">
+					Sat
+        </label>
+      </li>
+      <li>
+        <%= f.radio_button :week_day, 0 -%>
+        <label for="course_week_day_0">
+					Sun
+        </label>
+      </li>
+    </ul>
+
+    <h3>Start and end time</h3>
+
+    <p>
+      <%= f.text_field :time_span, 'data-ajax-url' => course_length_path, :class => 'time_span' -%>
+      <span class="course_length"></span>
+    </p>
+
+    <p class="subtle">Eg: "6am to 7:30am", "noon to 12:45pm", "9:30am to 5pm"</p>
+    <span class="start_end_date">
+      <div class="title">
+        Start date
+      </div>
+      <div class="date">
+        <span id="start_date"><%=@course && @course.start_date ? @course.start_date.strftime("%b %d") : 'Immediately'%></span><br/>
+        <%= link_to 'change', '#', :onclick => '$( "#course_start_date" ).datepicker("setDate" , $("#course_start_date").val()).datepicker("show"); return false;' %>,
+        <%= link_to 'clear', '#', :onclick => '$( "#course_start_date" ).val(""); $("#start_date").text("Immediately")'%>
+        <%= f.hidden_field :start_date %>
+      </div>
+      <div class="clear"></div>
+      <br/>
+      <div class="title">
+        Expiry date
+      </div>
+      <div class="date">
+        <span id="expire_date"><%=@course && @course.expiry_date ? @course.expiry_date.strftime("%b %d") : 'Never'%></span><br/>
+        <%= link_to 'set expiry', '#', :onclick => '$( "#course_expiry_date" ).datepicker("setDate" , $("#course_expiry_date").val()).datepicker("show"); return false;' %>,
+        <%= link_to 'clear', '#', :onclick => '$( "#course_expiry_date" ).val(""); $("#expire_date").text("Never")'%>
+        <%= f.hidden_field :expiry_date %>
+      </div>
+      <p>
+	Note: Set expiry date to the date the last class runs on.
+      </p>
+    </span>
+  </div>
+  <div id="single">
+    <div id="single-picker"></div>
+
+    <%= fields_for 'occurrences' do |d| %>
+      <%= hidden_field_tag 'occurrences[date]', @course.occurrences.first && @course.occurrences.first.date ? @course.occurrences.first.date.strftime("%d-%m-%Y") : nil %>
+
+      <h3>Start and end time</h3>
+
+      <p>
+        <%= d.text_field :time_span, 'data-ajax-url' => course_length_path, :class => 'time_span' -%>
+        <span class="course_length"></span>
+      </p>
+    <% end %>
+    <p class="subtle">Eg: "6am to 7:30am", "noon to 12:45pm", "9:30am to 5pm"</p>
+  </div>
+  <div id="multiple">
+    <div id="multiple-picker"></div>
+    <%= fields_for 'occurrences' do |d| %>
+      <% if edit %>
+        <% @course.occurrences.each do |occ| %>
+          <span>
+            <h3><%= occ.date.strftime("%d-%m-%Y") %> <a>remove</a></h3>
+            <%= text_field_tag "occurrences[#{occ.id}][time_span]", occ.time_span, :class => 'time_spans' %>
+
+            <span class="course_length"></span>
+          </span>
+        <%end%>
+      <% end %>
+      <div id="multiple_days_list"></div>
+    <% end %>
+  </div>
+
+  <br/>
+  <input type="submit" value="Next" />
+  <p class="subtle" style="width: 280px;">Note: Classes that don`t begin immediately will be listed in
+    schedules 2 weeks prior to their start date, accompanied by a note stating
+    its start date and time.</p>
+</fieldset>

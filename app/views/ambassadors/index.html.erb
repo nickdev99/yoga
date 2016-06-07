@@ -1,0 +1,47 @@
+<script>
+  $(function(){
+    $(".amb_areas").chosen().change(function() {
+      $.post('/ambassadors/assign_areas/' + $(this).attr('id').split('_')[2], {areas: $(this).val()})
+    });
+    $("#add_ambassador").click(function() {
+      $(".new_ambassador").show();
+    });
+
+    $('#amd_name').autocomplete({
+      source: 'ambassadors/search',
+      autoFocus: true,
+      select: function(event, ui) {
+        $.get('ambassadors/' + ui.item.id + '?areas=' + $('#amb_areas').val() , function(data){
+          $('#ambassadors').prepend(data);
+          $(".amb_areas").chosen().change(function() {
+            $.post('/ambassadors/assign_areas/' + $(this).attr('id').split('_')[2], {areas: $(this).val()})
+          });
+          $(".new_ambassador").hide();
+          $('#amd_name').val('');
+          $('#amb_areas').val('');
+          $('#amb_areas').trigger("liszt:updated");
+        })
+      }
+    });
+    
+  });
+</script>
+<h2 style="border-bottom: 1px solid rgb(220,220,220); padding-bottom: 15px;">Ambassadors <%=link_to 'Add Ambassador', '#', :class => 'github', :id => 'add_ambassador'%></h2>
+<div class="ambassadors">
+  <div class="ambassador_header">
+    <span>Ambassador Name</span><span>Cities</span>
+  </div>
+  <div class="new_ambassador">
+    <div id="new_ambassador" class="ambassador_row">
+      <span class="amb_name"><%= text_field_tag :amd_name %></span>
+      <span class="amb_cities">
+        <%= select_tag :amb_areas, options_for_select(@areas.map {|area| [area.city, area.id]}), {:multiple =>  true, :prompt=>'select areas', 'data-placeholder' => "Cities I Teach in...", :class => 'amb_areas'} %>
+      </span>
+    </div>
+  </div>
+  <div id="ambassadors">
+    <%for amb in @ambassadors do%>
+      <%= render :partial => 'ambassador_row', :locals => {:amb => amb}%>
+    <%end%>
+  </div>
+</div>

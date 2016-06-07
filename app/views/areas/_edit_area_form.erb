@@ -1,0 +1,25 @@
+<p  class="sity_area_field"><%= 'Country / Code' %></p>
+<%= f.text_field :country, :size => '25' %>
+<%= f.text_field :country_code, :size => '2', :maxlength => '2' %><br/>
+
+<p  class="sity_area_field"><%= 'City' %></p>
+<%= f.text_field :city_cached_slug, :size => '30' %><br/>
+
+<p  class="sity_area_field"><%= 'Region' %></p>
+<%= f.text_field :region, :size => '30' %><br/>
+
+<p  class="sity_area_field"><%= 'Region-Abbr' %></p>
+<%= f.text_field :region_abbreviature, :size => '8' %><br/>
+
+<p  class="sity_area_field"><%= 'Population' %></p>
+<%= f.text_field  :population, :size=>8%><br/><br/>
+
+<p  class="sity_area_field">
+  <%= f.check_box  :active%>
+  <%= 'Active' %>
+</p>
+
+<p class="sity_area_field">
+  <%= f.check_box  :focus %>
+  <%= 'Focus' %>
+</p>

@@ -1,0 +1,14 @@
+<h2>Signup</h2>
+
+<p id="step-1-content">
+  You will get free exposure to your classes, workshops, and events.<br/>
+  Get excited for ILY's ever-growing community!
+</p>
+<%= form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f| %>
+  <div id="registration">
+    <%= error_messages_for(resource) %>
+    <div class="1-step"><%= render :partial => 'registrations/steps/step_1', :locals => { :f => f } %></div>
+    <div class="2-step"><%= render :partial => 'registrations/steps/step_2', :locals => { :f => f } %></div>
+  </div>
+    <span id="step-2-content">We will send you a confirmitation / reminder email - but you can start adding classes right away :)</span></p>
+<% end %>

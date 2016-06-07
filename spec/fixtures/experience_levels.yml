@@ -1,0 +1,9 @@
+beginner:
+  id: 1
+  name: Beginner
+intermediate:
+  id: 2
+  name: Intermediate
+advanced:
+  id: 3
+  name: Advanced

@@ -1,0 +1,98 @@
+<script type="text/javascript" charset="utf-8">
+  var editCourse = false;
+
+</script>
+<!-- Header -->
+<div id="provider">
+  <h2><%= @provider.name -%></h2>
+  <p id="studios">
+    <% @studios.each do |studio| -%>
+      <%= link_to studio.name, schedules_path(@city, @region_abbr, @provider, @studio), :class => ('current' if studio == @studio) -%>
+    <% end %>
+  </p>
+
+  <h3 id="schedule_name"><%= @studio.name -%> Schedule</h3>
+</div>
+<!-- /Header -->
+
+<!-- Form Steps -->
+<div id="steps" class="coursesSteps">
+  <h3>5 Quick Steps</h3>
+
+  <ul class="steps">
+    <li style="padding-top: 11px"><a href="#" data-step="course_dates">When</a></li>
+    <li><a href="#" data-step="course_details">What</a></li>
+    <li><a href="#" data-step="course_instructors">Who</a></li>
+    <li><a href="#" data-step="course_cost">Cost</a></li>
+    <li><a href="#" data-step="course_done">Done</a></li>
+  </ul>
+</div>
+<!-- /Form Steps -->
+
+<!-- form content -->
+<div id="course_form_container">
+  <h2>Add New Event</h2>
+  <!-- Form object details -->
+  <!-- Secctions will be empty before enter -->
+  <div id="preview">
+    <div id="timing">
+      <p><strong>9:00am</strong> <span class="subtle">1 hour</span></p>
+    </div>
+
+    <div id="details">
+      <p><strong>Hatha Yoga</strong> <span class="subtle">Front Room (Warm)</span></p>
+    </div>
+
+    <div id="instructor">
+      <p><strong></strong> <span class="subtle"></span></p>
+    </div>
+
+    <p style="clear: left; margin: 0;"></p>
+  </div>
+  <!-- /Form object details -->
+  <div id="dialog">
+    <%= form_for(:user, :url => provider_people_path(@city, @region_abbr, @provider), :html => {:method => :post}) do |f|%>
+      <%= render :partial => 'new_person', :locals => {:assign_instructor => nil, :f => f} %>
+    <%end%>
+  </div>
+  <div id="new_room">
+    <%= form_for :room, :url => provider_studio_rooms_path(@provider, @studio), :html => {:remote => true, :method => :post} do |form| %>
+      <%= hidden_field_tag :is_course, true %>
+      <%= render :partial => "rooms/content", :locals => {:f => form}%>
+    <%end%>
+  </div>
+  <div id="current_step">
+    <%= form_for :course, :url => provider_studio_courses_path(@city, @region_abbr, @provider, @studio, @course),
+      :html 		=> {:id => 'course_form', :method => :post} do |f|
+    %>
+      <!-- course_type -->
+      <%= render :partial => 'courses/steps/course_type', :locals => {:f => f} %>
+      <!-- /course type -->
+
+      <!-- course dates -->
+      <%= render :partial => 'courses/steps/course_dates', :locals => {:f => f, :edit => false} %>
+      <!-- /course dates -->
+
+      <!-- course details -->
+      <%= render :partial => 'courses/steps/course_details', :locals => {:f => f, :course => @course} %>
+      <!-- /course details -->
+
+      <!-- course instructors -->
+      <%= render :partial => 'courses/steps/course_instructors', :locals => {:f => f, :provider => @provider, :studio => @studio, :course => @course } %>
+      <!-- /course instructors -->
+
+      <!-- course cost -->
+      <%= render :partial => 'courses/steps/course_cost', :locals => {:f => f} %>
+      <!-- /course cost -->
+
+      <!-- course done -->
+      <fieldset id="course_done">
+        <p><strong>Done</strong></p>
+        <p>Confirm information above is correct</p>
+        <input type="submit" value="Save" />
+      </fieldset>
+      <!-- /course done -->
+    <% end %>
+  </div>
+</div>
+<!-- /form content -->

@@ -1,0 +1,163 @@
+<%= form_for [@provider, @studio, @course], 
+						 :remote 	=> true, 
+						 :html 		=> {:id => 'course_form'} do |f| 
+						 %>
+	<!-- course_dates -->	
+	<fieldset id="course_dates">
+		<%= hidden_field_tag :next_step, 3 -%>
+		
+		<legend>When</legend>
+	
+		<% if @course.recurring? %>
+			<div id="course_dates_reccurring" class="course_dates">
+				<h3>Day of week</h3>
+
+				<ul id="week_days">
+					<li>
+						<%= f.radio_button :week_day, 1 -%>
+						<label for="course_week_day_1">						
+							Mon
+						</label>
+					</li>
+					<li>
+						<%= f.radio_button :week_day, 2 -%>
+						<label for="course_week_day_2">
+							Tues
+						</label>
+					</li>
+					<li>
+						<%= f.radio_button :week_day, 3 -%>
+						<label for="course_week_day_3">
+							Wed
+						</label>
+					</li>
+					<li>
+						<%= f.radio_button :week_day, 4 -%>
+						<label for="course_week_day_4">
+							Thur
+						</label>
+					</li>
+					<li>
+						<%= f.radio_button :week_day, 5 -%>
+						<label for="course_week_day_5">
+							Fri
+						</label>
+					</li>
+					<li>
+						<%= f.radio_button :week_day, 6 -%>
+						<label for="course_week_day_6">
+							Sat
+						</label>
+					</li>
+					<li>
+						<%= f.radio_button :week_day, 7 -%>
+						<label for="course_week_day_7">
+							Sun
+						</label>
+					</li>			
+				</ul>
+				<script type="text/javascript" charset="utf-8">
+					$('#week_days').buttonset();
+				</script>
+
+				<p>Note: you will be able to add exceptions later</p>
+
+				<h3>Start and end time</h3>
+
+				<p>
+					<%= f.text_field :time_span, 'data-ajax-url' => course_length_path -%> 
+					<span id="course_length"></span>
+				</p>		
+
+				<p class="subtle">Eg: "6am to 7:30am", "noon to 12:45pm", "9:30am to 5pm"</p>					
+			</div>
+		<% elsif @course.single_date? %>
+			<div id="course_dates_single" class="course_dates">
+					<div id="single_date" data-ajax-url="<%= url_for(
+							[@provider, @studio, @course, :course_occurrences]
+						) -%>">
+						
+					</div>
+					<script type="text/javascript" charset="utf-8">
+							$('#single_date').datepicker({
+							  minDate: 0,
+								dateFormat: 'dd/mm/yy',
+								onSelect: function(dateText, datePicker) {
+									$(this).val(dateText);
+									
+									var	vals	= dateText.split('/'),
+											day 	= vals[0],
+											month	= vals[1],
+											year	= vals[2],
+											data	= {year: year, month: month, day: day, event_type: 'single'},
+											url		= $(this).attr('data-ajax-url');
+
+									$.post(url, data, function(content, status, xhr) {
+										$('#course_date_single_existing').html(content);
+									});
+								}
+							});
+					</script>
+          <p>Select the date above</p>
+				<div id="course_date_single_existing"></div>
+				<script type="text/javascript" charset="utf-8">
+           url   = $('#single_date').attr('data-ajax-url');
+           data = {
+             year: '<%= Date.today.year %>',
+             month: '<%= Date.today.month %>',
+             day: '<%= Date.today.day %>',
+             event_type: 'single'
+           }
+           $.post(url, data, function(content, status, xhr) {
+             $('#course_date_single_existing').html(content);
+          });
+				</script>
+			</div>
+		<% elsif @course.multiple_date? %>
+
+			<div id="course_dates_multiple" class="course_dates">			
+				<div id="multiple_date" data-ajax-url="<%= url_for(
+						[@provider, @studio, @course, :course_occurrences]
+					) -%>">
+				</div>
+				<script type="text/javascript" charset="utf-8">
+						$('#multiple_date').datepicker({
+							dateFormat: 'dd/mm/yy',
+							onSelect: function(dateText, datePicker) {
+
+								$(this).val(dateText);
+								
+								var	vals	= dateText.split('/'),
+										day 	= vals[0],
+										month	= vals[1],
+										year	= vals[2],
+										data	= {year: year, month: month, day: day, event_type: 'multiple'},
+										url		= $(this).attr('data-ajax-url');
+
+								$.post(url, data, function(content, status, xhr) {
+									$('#course_dates_multiple_existing').html(content);
+								});
+							}
+						});
+            // $('.ui-datepicker-calendar tbody a').click(function(){
+            //   $(this).unbind();
+            //   $(this).parents('td').unbind();
+            //   console.log(this)
+            // })
+				</script>
+						
+				<div id="course_dates_multiple_existing" style="background: rgb(240,240,240); padding: 10px;">
+			
+				</div>
+			</div>
+		<% end %>
+		
+		<%= f.submit 'Save & go to next step' -%> or <%= link_to 'go back a step', nil, :id => 'step_back' -%>
+	</fieldset>
+<% end %>
+<script type="text/javascript" charset="utf-8">
+	// The date picker UI element inserts a containing
+	// div which is visible by default (a bug?). Set
+	// the div's display value to "none" to hide it.
+	$('#ui-datepicker-div').css('display', 'none');
+</script>

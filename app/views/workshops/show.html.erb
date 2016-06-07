@@ -1,0 +1,42 @@
+<h2>Workshop</h2>
+<% instructor = @course.instructors.first
+if instructor%>
+  <div class="thumbnail"><%= image_tag instructor.user.avatar.url(:small) unless instructor.user.avatar.path(:small).nil?%></div>
+<%end%>
+<div class="event_name"><%="#{@course.name} #{worshop_type(@course)}"%>
+  <%provider = @course.studio.provider
+  studio = @course.studio
+%>
+  <div class="event_studio"><%= link_to provider.name, schedules_path(@city, @region_abbr, provider, studio), :style => 'color: #666'%>(<%= link_to studio.name, schedules_path(@city, @region_abbr, provider, studio), :style => 'color: #666' %>), <%= @course.studio.address %></div>
+  <div class="event_studio">
+    <% @course.instructors.each do |i|%>
+      <%= link_to i.name, "/instructors/#{i.user.cached_slug}/#{@city}/#{@region_abbr}", :style => 'color: #666'%>,
+    <%end%>
+  </div>
+</div>
+<div class="dates">
+  <% @course.occurrences.each do |o| %>
+    <%= o.date.strftime("%b %d") + ' - ' + o.time_span %><br/>
+  <%end%>
+</div>
+<div class="desc">
+  <span class="workshop_title">Description &emsp;</span>
+  <span class="workshop_value"><%=@course.description%></span>
+</div>
+<div class="desc">
+  <span class="workshop_title">Styles &emsp;</span>
+  <span class="workshop_value"><%=@course.styles.collect(&:name).join(', ')%></span>
+</div>
+<div class="desc">
+  <span class="workshop_title">Experience level &emsp;</span>
+  <span class="workshop_value"><%=@course.experience_levels.collect(&:name).join(', ')%></span>
+</div>
+<div class="desc">
+  <span class="workshop_title">Practice level &emsp;</span>
+  <span class="workshop_value"><%=@course.practice_levels.collect(&:name).join(', ')%></span>
+</div>
+<%if @course.information_link%>
+  <div class="desc">
+    <a href="<%=@course.information_link%>" TARGET="_blank">link to more info</a>
+  </div>
+<%end%>

@@ -1,0 +1,166 @@
+<script>
+  $(function() {
+    $('#course_name').catcomplete({
+      autoFocus: true,
+      source: '/<%=@city%>/<%=@region_abbr%>/providers/<%=@provider.cached_slug%>/studios/<%=@studio.cached_slug%>/class_search',
+      select: function(event, ui) {
+        if(ui.item.id != null) {
+          $.post('/<%=@city%>/<%=@region_abbr%>/providers/<%=@provider.cached_slug%>/studios/<%=@studio.cached_slug%>/assign_class', {course_id: ui.item.id, new_course: true, current_course: '<%=@course.id%>'});
+        }else{
+
+        }
+      }
+    });
+    $('#new_room').dialog({
+      bgiframe: true,
+      autoOpen: false,
+      modal: true,
+      width: 400
+    });
+
+    $('#new_room_link').click(function(){
+      $('#new_room').dialog('open');
+      return false;
+    })
+    $(".rooms").change(function(){
+      $.get('/room_temp/' + $(this).attr('id').split("_")[3], function(data){
+        $('#room_temperature').html(data);
+        $( "#room_temperature" ).buttonset()
+      });
+    });
+  });
+</script>
+
+<fieldset id="course_details">
+
+  <legend>What</legend>
+
+  <p><label>Name</label> <%= f.text_field :name -%></p>
+    <script>
+      $(function(){
+        $("#popup_styles").dialog({
+          autoOpen: false,
+          bgiframe: false,
+          width: 400,
+          buttons: { "Done": function() { $(this).dialog('close'); } },
+        });
+        $(".popup_styles").click(function(){
+          console.log($(this).attr('checked'));
+          $('#course_style_id_' + $(this).attr('id').split('_')[3]).attr('checked', $(this).attr('checked'));
+          course_styles_list = [];
+          $('#course_styles ul input:checkbox:checked').each(function(){
+            course_styles_list.push($(this).attr('data-name'));
+          })
+          $('#course_styles_ph span').html('');
+          $.each(course_styles_list, function(i,val){
+            $('#course_styles_ph span').append(val+', ');
+          })
+        });
+        $('.handsy').change(function(){
+          $('#course_handsy_' + $(this).attr('id')).attr('checked', $(this).attr('checked'));
+        });
+      });
+    </script>
+    <p><%= link_to_function 'set styles', '$("#popup_styles").dialog("open");' -%></p>
+    <div id="popup_styles" class="course_styles">
+      <ul>
+        <% CourseStyle.all.each do |style| %>
+          <li>
+            <label>
+              <%= check_box_tag :style_ids, style.id, course.styles.include?(style), 'data-name' => style.name, :id => "popup_style_id_#{style.id}", :class => 'popup_styles' -%>
+              <%= style.name -%>
+            </label>
+          </li>
+        <% end %>
+      </ul>
+
+      <h3>Handsy-ness</h3>
+
+      <p><label><%= radio_button_tag :handsy, 'Hands-off', @course.handsy == 'Hands-off' ? true : false, :class => 'handsy', :id => 'hands-off'-%> Hands-off</label></p>
+      <p><label><%= radio_button_tag :handsy, 'Manual Assists/Enhancements', (@course.handsy.blank? || @course.handsy == 'Manual Assists/Enhancements' ? true : false), :class => 'handsy', :id => 'manual_assistsenhancements' -%> Manual Assists/Enhancements</label></p>
+    </div>
+  <div id="course_styles" style="display: none" class="course_styles">
+    <ul>
+      <% CourseStyle.all.each do |style| %>
+        <li>
+          <label>
+            <%= check_box_tag 'course[style_ids][]', style.id, course.styles.include?(style), 'data-name' => style.name, :id => "course_style_id_#{style.id}" -%>
+            <%= style.name -%>
+          </label>
+        </li>
+      <% end %>
+    </ul>
+
+    <h3>Handsy-ness</h3>
+    <p><label><%= f.radio_button :handsy, 'Hands-off' -%> Hands-off</label></p>
+    <p><label><%= f.radio_button :handsy, 'Manual Assists/Enhancements', :checked => (@course.handsy.blank? || @course.handsy == 'Manual Assists/Enhancements' ? true : false) -%> Manual Assists/Enhancements</label></p>
+  </div>
+
+
+
+  <div id="course_styles_ph">
+    <span></span>
+  </div>
+
+
+  <p><label>Room</label></p>
+  <%= hidden_field_tag :room_url_base, provider_studio_rooms_path(@city, @region_abbr, @provider, @studio) -%>
+  <ul id="rooms">
+    <%= render :partial => 'courses/new_room', :locals => {:rooms => @studio.rooms} %>
+  </ul>
+  <div><%= link_to 'create new room', '#', :id => 'new_room_link', :style => 'position: relative; top: -20px;' %></div>
+
+  <p><label>Room Temperature</label></p>
+  <ul id="room_temperature">
+    <%= render :partial => 'courses/room_temperature', :locals => {:temperatures => (course && course.room ? course.room.temperatures : RoomTemperature.all)} %>
+  </ul>
+
+  <p>
+    <label>Min. numbers <%= f.text_field :minimum_capacity, :class => 'capacity' -%></label>
+    <label>Max. capacity <%= f.text_field :maximum_capacity, :class => 'capacity' -%></label>
+  </p>
+
+
+  <p>
+    <label>Experience Level</label>
+
+  <ul id="experience_level">
+    <% ExperienceLevel.all.each do |level| %>
+      <li>
+        <%= check_box_tag 'course[experience_level_ids][]', level.id, course.experience_levels.include?(level), :id => "course_experience_level_#{level.id}" -%>
+        <%= label_tag "course_experience_level_#{level.id}", level.name -%>
+      </li>
+    <% end %>
+  </ul>
+  <div style="color: #666; margin-top: -20px;">Note: 'Any' denotes that the instructor will adjust the class based on experience level of students in class<br/>
+    Note: Setting 'Beginner' will assign this class to 'Yoga for Beginners' filter
+  </div>
+</p>
+
+<p>
+  <label>Practice Level</label>
+
+<ul id="practice_level">
+  <% PracticeLevel.all.each do |level| %>
+    <li>
+      <%= check_box_tag 'course[practice_level_ids][]',
+        level.id,
+        course.practice_levels.include?(level),
+        :id => "course_practice_level_ids_#{level.id}"
+      -%>
+      <%= label_tag "course_practice_level_ids_#{level.id}", level.name -%>
+    </li>
+  <% end %>
+</ul>
+</p>
+
+<p><%= link_to 'Add description', '#course_description', :class => 'reveal' -%></p>
+<%= f.text_area :description, :style => 'display: none;' -%>
+
+<p><%= link_to 'Add a notice', '#course_notice', :class => 'reveal' -%></p>
+<%= f.text_field :notice, :style => 'display: none;' -%>
+
+<p><%= link_to 'Add link to more info', '#course_information_link', :class =>'reveal' -%></p>
+<%= f.text_field :information_link, :style => 'display: none;' -%>
+<input type="submit" value="Next" />
+</fieldset>

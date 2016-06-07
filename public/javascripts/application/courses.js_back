@@ -1,0 +1,372 @@
+/* 
+Javascript for classes form
+*/
+
+/* 
+$(document).ready
+--
+
+On page load, setup links with class ".reveal" to show/hide their associated element.
+*/
+function showAssociated(){
+   $('a.reveal').unbind();
+   $('a.reveal').click(function() {
+   	var id = $(this).attr('href');
+   	var e  = $(id);
+   	console.log(id)
+   	// Show or hide the associated element
+   	e.toggle();
+	
+   	// Stop the click element from proceeding
+   	// todo:3: jQuery preventDefault() isn't working
+   	return false;
+   });
+}
+
+
+$(document).ready(function() {
+   new showAssociated();
+});
+
+/*
+Steps
+--
+*/
+$('#course_form').live('submit', function() {
+	var	url 	 = $(this).attr('action'),
+			data	 = $(this).serialize();
+	
+	$.ajax(url, {
+		type: 'POST',
+		data: data,
+		success: function(content, status, xhr) {
+			$('#current_step').html(content);		
+		}
+	});
+	
+	return false;
+});
+
+/*
+Event Types
+--
+
+Show the correct set of event date fields according to which event type is selected.
+*/ 
+$(document).ready(function() {
+  $('#event_type li').click(function(event) {
+    if (event.target.type !== 'radio') {
+      $(':radio', this).trigger('click');
+      $(':radio', this).trigger('change');
+    }
+  });
+});
+
+$('#event_type input[type=radio]').live('change', function() {
+	var associate = $(this).attr('data-associate'),
+			others		= $('.course_dates');
+	
+	others.hide();	
+	$(associate).show();
+	$(this).parents('form').submit();
+});
+
+/*
+Single Dates
+--
+
+Currently handled by javascript in the related view.
+
+@see app/views/courses/new/_b_course_dates.html.erb
+*/
+
+/*
+Multiple Dates
+--
+
+Add a multiple class occurrences when the 'add date' link is clicked
+*/
+$('a#add_multiple_date').live('click', function() {
+	var	vals	= $('#multiple_date').val().split('/'),
+			day 	= vals[0],
+			month	= vals[1],
+			year	= vals[2],
+			data	= {year: year, month: month, day: day, event_type: 'multiple'},
+			url		= $(this).attr('href');
+			
+	$.post(url, data, function(content, status, xhr) {
+		$('#course_dates_multiple_existing').html(content);
+	});
+	
+	return false;
+});
+
+/*
+Delete a multiple course occurrence
+*/
+$('.destroy_occurrence').live('ajax:success', function(data, content, xhr) {
+	$('#course_dates_multiple_existing').html(content);
+});
+
+/*
+Update an occurrence length description when the
+occurrence's time span is changed.
+*/
+$('.occurrence_time_span').live('keyup', function() {
+	var url  	 = $(this).attr('data-ajax-url'),
+			target = $(this).attr('data-update-target'),
+			value	 = $(this).val();
+	
+	      setTimeout(function(){
+      	if (value != '') {
+      		$.ajax(url, {
+      			type: 'GET',
+      			data: {span: value},
+      			success: function(content, status, xhr) {
+      				$(target).html(content);				
+      			},
+      			error: function(){
+      			   $(target).html('');
+      			}
+      		});
+      	// If no timespan is given, make sure that the
+      	// page shows no timespan representation.
+      	} else {
+      		$(target).html('');
+      	}
+      }, 5);
+});
+
+/*
+Length
+--
+
+After the user enters a start and end time description,
+update the new course form with a representation of the
+length in words.
+*/
+$('#course_time_span').live('keyup', function() {
+	var value  = $(this).val(),
+			url		 = $(this).attr('data-ajax-url'),
+			target = $('#course_length');
+
+   	// If a timespan value is given, ask the app
+   	// for the span's representation in words
+   	// and update the page accordingly.
+   	setTimeout(function(){
+   	if (value != '') {
+   		$.ajax(url, {
+   			type: 'GET',
+   			data: {span: value},
+   			success: function(content, status, xhr) {
+   				target.html(content);				
+   			},
+   			error: function(){
+   			   target.html('');
+   			}
+   		});
+   	// If no timespan is given, make sure that the
+   	// page shows no timespan representation.
+   	} else {
+   		target.html('');
+   	}
+   }, 5);
+});
+
+/*
+Room
+--
+
+The first time a room is selected for a course, populate the
+room fields with data from the selected room.
+
+Relevant data is:
+	- Room temperature
+	- Maximum capacity
+*/
+$('#course_room_id').live('change', function() {
+	var option   = $(this).find(':selected'),
+			id		   = option.val(),
+			url_base = $('#room_url_base').val(),
+			url			 = url_base + '/' + id;
+			
+	$.ajax(url, {
+		type: 'GET',
+		dataType: 'json',
+		success: function(json, status, xhr) {
+			// Set default room temperature for course
+			var radios = $('input[name="course[room_temperature_id]"]');
+						
+			radios.each(function() {
+				if ($(this).val() == json.room.default_temperature_id) { 
+					$(this).attr('checked', 'checked'); 
+				};
+			});
+			
+			// Hide room temperature options which don't apply to the room
+			$('[name="course[room_temperature_id]"]').each(function() {
+				var id 		= $(this).val(),
+						temps = json.room.temperatures,
+						hide	= true;
+										
+				for (var i=0; i < temps.length; i++) {
+					if (temps[i].id == id) { hide = false; };
+				};
+				
+				if (hide) { 
+					$(this).closest('li').hide(); 
+				} else {
+					$(this).closest('li').show();
+				}
+			});
+			
+			// Set default minimum capacity
+			var input = $('#course_minimum_capacity'),
+					val	  = input.val();
+					
+			if (val == '') {
+				// Only proceed if minimum capacity isn't already set
+				input.val(json.room.studio.minimum_course_capacity);
+			};			
+			
+			// Set default maximum capacity
+			var	input	=	$('#course_maximum_capacity'),
+					val		= input.val();
+					
+			if (val == '') {
+				// Only proceed if maximum capacity isn't already set
+				input.val(json.room.capacity);
+			};			
+		}
+	});
+});
+
+/* 
+Instructors 
+--
+
+Functionality for the 'Add' link (for existing staff members).
+*/
+$('#add_instructor').live('click', function() {
+	var id   = $('#instructor_id :selected').val(),
+			url  = $(this).attr('href'),
+			data = {assignment: {staff_member_id: id}};
+	
+	// Post the new assingment data and update the page 
+	$.post(url, data, function(content, status, xhr) {
+			$('#assigned_instructors').html(content);
+		}
+	);
+	
+	return false;
+});
+
+/*
+Show the new instructor form via AJAX when the 'New Person' link is clicked
+*/
+$('a#add_person').live('ajax:success', function(data, content, xhr) {
+	$('#new_person_form').html(content);
+});
+
+
+/*
+Update assignment roles via AJAX when a new role is selected
+*/
+$('#course_assignments li input[type=radio]').live('change', function() {
+	var name 	 = $(this).attr('name'),
+			group	 = '[name="' + name + '"]',
+			button = $(group).filter(':checked'),
+			id		 = button.val(),
+			url		 = button.attr('data-target-url'),
+			data   = {assignment: {role_id: id}};
+	
+	$.ajax(url, {
+		type: 'PUT',
+		data: data,
+		success: function(content, status, xhr) {
+			$('#assigned_instructors').html(content);
+		}
+	});
+});
+
+/*
+After deleting an assignment, update the assignments list
+*/
+$('#delete_assignment').live('ajax:success', function(data, content, xhr) {
+	$('#assigned_instructors').html(content);
+});
+
+/* 
+Pricing options 
+--
+
+When a pricing option radio button is selected,
+show the associated details list (if it exists)
+and hide other associate lists.
+*/
+$('#course_cost input[type=radio]').live('change', function() {
+	var radios  = $('[name="course[price_attributes][cost_type]"]'),
+	 		checked = radios.filter(':checked'),
+			target  = checked.data('associate');
+
+	radios.each(function() {
+		var associate = $(this).data('associate');
+		
+		if (associate == target) {
+			$(associate).show();
+		} else {
+			$(associate).hide();
+		};
+	});
+});
+
+/*
+Show/hide the pre-registration options
+*/
+$('#course_pre_registration_required').live('change', function() {
+	$('#pre_registration').toggle();
+});
+
+/*
+Step navigation
+--
+*/
+$('#step_back').live('click', function() {
+	var	input	= $('input[name="next_step"]'),
+			val		= $(input).val(),
+			step  = val - 2;
+	
+	// submit the form, asking the app
+	// to render HTML for the previous step.
+	input.val(step);
+			
+	$('#course_form').submit();
+	
+	return false;
+});
+
+$('.coursesSteps a').live('click', function() {
+   var	input	= $('input[name="next_step"]'),
+			step  = $(this).attr('data-step');
+	
+	// submit the form, asking the app
+	// to render HTML for the previous step.
+	input.val(step);
+			
+	$('#course_form').submit();
+	
+	return false;
+})
+
+
+// MonkeyPatch for date
+$('.occurrence_time_span').live('blur',function(){
+   var occurrence_id = $(this).attr('name').split('_')[1].split('[')[0],
+       data = { span: $(this).val() }
+   
+	$.ajax('/occurrence/'+occurrence_id, {
+		type: 'PUT',
+		data: data
+	});
+   
+})

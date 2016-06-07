@@ -1,0 +1,7 @@
+$('#dialog').dialog('close');
+<% unless params[:assign_instructor].blank? %>
+  $.post('assign_instructor', {course_id: '<%=params[:course_id]%>', instructor_id: '<%=@staff.id%>'});
+  $('#loader_' + '<%=params[:course_id]%>').show().fadeOut(1600);
+<%else%>
+  add_instructor(<%= @staff.id %> , '<%= @staff.name(admin?) %>');
+<%end%>

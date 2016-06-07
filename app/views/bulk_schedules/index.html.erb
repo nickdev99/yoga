@@ -1,0 +1,76 @@
+<script>
+  $.widget( "custom.catcomplete", $.ui.autocomplete, {
+    _renderMenu: function( ul, items ) {
+      var self = this,
+      currentCategory = '';
+      $.each( items, function( index, item ) {
+        if ( item.category != currentCategory ) {
+          ul.append( "<li><strong>" + item.category + "</strong></li>" );
+          currentCategory = item.category;
+        }
+        self._renderItem( ul, item );
+      });
+    }
+  });
+  $(function() {
+    $(".week_day").click(function(){
+      $.get('change_day_of_week?week_day=' + $(this).val());
+    });
+  });
+</script>
+<div id="dialog">
+  <%= form_for(:user, :url => provider_people_path(@city, @region_abbr, @provider), :html => {:method => :post}) do |f|%>
+    <%= render :partial => 'courses/new_person' , :locals => {:assign_instructor => true}%>
+  <%end%>
+</div>
+<div id="new_room">
+  <%= form_for [@provider, @studio, @room], :html => {:remote => true} do |f| %>
+    <%= render :partial => "rooms/content", :locals => {:f => f}%>
+  <%end%>
+</div>
+<div id="provider">
+  <h2><%= @provider.name -%> </h2>
+  <p id="studios">
+    <% @studios.each do |studio| -%>
+      <%= link_to studio.name, provider_studio_bulk_schedules_path(@city, @region_abbr, @provider, studio), :class => ('current' if studio == @studio) -%>
+    <% end %>
+  </p>
+</div>
+<div style="float:right; margin-top: 15px;"><%=link_to 'View Planned Schedule Updates', provider_studio_schedule_updates_path(@city, @region_abbr, @provider, @studio)%></div>
+<h3 class="feel_yoga"><%= @studio.name.upcase %> SCHEDULE</h3>
+<h2>Bulk edit for Recurring Classes</h2>
+<h3><strong>Day of week</strong></h3>
+<div id="radio" >
+  <%= radio_button_tag :week_day, 1, params[:week_day] == '1', :class => 'week_day' -%>
+  <label for="week_day_1">
+    Mon
+  </label>
+  <%= radio_button_tag :week_day, 2, params[:week_day] == '2', :class => 'week_day' -%>
+  <label for="week_day_2">
+    Tues
+  </label>
+  <%= radio_button_tag :week_day, 3, params[:week_day] == '3', :class => 'week_day' -%>
+  <label for="week_day_3">
+    Wed
+  </label>
+  <%= radio_button_tag :week_day, 4, params[:week_day] == '4', :class => 'week_day' -%>
+  <label for="week_day_4">
+    Thur
+  </label>
+  <%= radio_button_tag :week_day, 5, params[:week_day] == '5', :class => 'week_day' -%>
+  <label for="week_day_5">
+    Fri
+  </label>
+  <%= radio_button_tag :week_day, 6, params[:week_day] == '6', :class => 'week_day' -%>
+  <label for="week_day_6">
+    Sat
+  </label>
+  <%= radio_button_tag :week_day, 0, params[:week_day] == '0', :class => 'week_day' -%>
+  <label for="week_day_0">
+    Sun
+  </label>
+</div>
+<div style="display: inline;"><%= link_to 'Show Full Week', 'change_day_of_week?full_week=1', :remote => true%></div>
+<div class="classes_content">
+  <%= render :partial => 'courses_content' %>
+</div>

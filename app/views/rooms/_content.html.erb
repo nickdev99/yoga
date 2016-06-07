@@ -1,0 +1,19 @@
+<%= render :partial => "shared/form_errors", :locals => {:obj => @room} %>
+<p><label>Name <%= f.text_field :name -%></label></p>
+
+<p><label>Temperatures</label></p>
+
+<ul>
+  <% RoomTemperature.order_temp.each do |temp| %>
+    <li><%= f.check_box :temperature_ids, {:name => "room[temperature_ids][]"}, temp.id, nil -%> <%= temp.name -%></li>
+  <% end %>
+</ul>
+
+<p>
+  <label>Default Temperature
+    <%= f.select :default_temperature_id, select_tag_options_for(RoomTemperature, :name) -%></label>
+</p>
+
+<p><label>Capacity <%= f.text_field :capacity -%></label> Required</p>
+
+<p class="submit"><%= f.submit -%></p>

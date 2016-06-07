@@ -1,0 +1,9 @@
+<div id="page-title">
+  <h1>Create New Area</h1>
+</div>
+
+<% form_for(:area, :url => areas_path) do |f| %>
+  <%= render :partial => 'edit_area_form', :locals => {:f => f} %>
+  <%= submit_tag 'Create' %>
+  <%= link_to 'Cancel', areas_path %>
+<% end %>

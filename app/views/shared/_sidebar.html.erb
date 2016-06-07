@@ -1,0 +1,41 @@
+<script>
+  $(function() {
+    $("#area").click(function(){
+      $('#area_text').hide();
+      $("#area-field").show();
+      $("#area_field").select();
+      $("#area_field").blur(function(){
+        $("#area-field").hide();
+        $('#area_text').show();
+      });
+    })
+  });
+</script>
+<div id="sidebar">
+  <div class="logo">
+    <span class="all-classes">All Studios, All Classes</span>
+    <div class="logo-text">I Live Yoga</div><div id="logo-description">
+        <div id="area">
+          <div id="area_text">
+            <%=@area.city%>
+          </div>
+          <div id="area-field" style="display: none;"><%=render :partial => 'shared/area_edit' %></div>
+        </div>
+      </div>
+  </div>
+  <ul>
+    <%if current_user%><li><%= link_to("Dashboard", dashboard_index_path(@city, @region_abbr))%></li><%end%>
+    <li><%= link_to "View All Classes", homes_path(@city, @region_abbr) %></li>
+    <li><%= link_to "Instructors", instructors_path(@city, @region_abbr) %></li>
+    <li><%= link_to("Workshops", workshops_path(@city, @region_abbr))%></li>
+    <%if is_ambassador?%><li><%= link_to("People", "/#{@city}/#{@region_abbr}/people")%></li><%end%>
+    <%if current_user && current_user.admin?%><li><%= link_to("Areas", areas_path)%></li><%end%>
+    <%if current_user && current_user.admin?%><li><%= link_to("Ambassadors", ambassadors_path)%></li><%end%>
+    <li><%= link_to("Top Cities", top_cities_path())%></li>
+  </ul>
+  <div class="cross-promote">
+    <br/><br/><br/><br/><br/>
+    <%= link_to("MenuSite - #{@area.city}", "http://www.menusite.ca/#{@city}/#{@region_abbr}/")%><br/>
+    <%= link_to("All Restaurants. All Menus.", "http://www.menusite.ca/#{@city}/#{@region_abbr}/")%><br/>
+  </div>
+</div>

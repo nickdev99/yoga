@@ -1,0 +1,32 @@
+<%= form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => { :method => :put }) do |f| %>
+  <%= devise_error_messages! %>
+  <p>
+    <%= f.label :first_name %> <%= f.text_field :first_name %><br/>
+    <%= f.label :last_name %> <%= f.text_field :last_name %><br/>
+    <%= f.label :sanskrit_name %> <%= f.text_field :sanskrit_name %> (optional)
+  </p>
+  
+  <p>
+    <%= f.label :studio_name %> <%= f.text_field :studio_name %> New entry<br/>
+    <%= f.label :address %> <%= f.text_field :address %> <%= f.label :postal_code %> <%= f.text_field :postal_code %><br/>
+    <%= f.label :city %> <%= f.text_field :city %><br/>
+    <%= f.label :phone %> <%= f.text_field :phone %><br/>
+    Note: You will be able to add additional studio locations once logged in
+  </p>
+  
+  <p>
+    <strong>Privacy Setting</strong><br/>
+    Can we show your Last name? (Trust for the win!)
+  </p>
+  
+  <p>
+    <%= f.radio_button :privacy_id, 0 %> It can be published<br/>
+    <%= f.radio_button :privacy_id, 1 %> Please only display the First character. Ex. Matt M.<br/>
+    <%= f.radio_button :privacy_id, 2 %> Keep my last name private (only show first name)
+  </p>
+  
+
+
+  <p><%= f.submit "Get started - remember, it's free!" %><br/>
+    We will send you a confirmitation / reminder email - but you can start adding classes right away :)</p>
+<% end %>

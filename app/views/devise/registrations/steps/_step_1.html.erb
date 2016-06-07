@@ -1,0 +1,19 @@
+<%= form_for(resource, :as => resource_name, :url => registration_path(resource_name)) do |f| %>
+  <%= devise_error_messages! %>
+  
+  <p>
+    <strong>Who are you?</strong><br/>
+    <%= f.radio_button :user_type, 0 %> I'm a yoga student<br/>
+    <%= f.radio_button :user_type, 1 %> I'm an instructor<br/>
+    <%= f.radio_button :user_type, 2 %> I'm a studio owner
+  </p>
+  
+  <p>
+    <%= f.label :email %> <%= f.email_field :email %><br/>
+    <%= f.label :password %> <%= f.password_field :password %><br/>
+    <%= f.label :password_confirmation %> <%= f.password_field :password_confirmation %>
+  </p>
+
+  <p><%= f.submit "Get started - remember, it's free!" %><br/>
+    We will send you a confirmitation / reminder email - but you can start adding classes right away :)</p>
+<% end %>

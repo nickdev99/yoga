@@ -1,0 +1,7 @@
+<div id="ambassador_<%=amb.id%>" class="ambassador_row">
+  <span class="amb_name"><%= amb.name(admin?) %></span>
+  <span class="amb_cities">
+    <%= select_tag :amb_areas, options_for_select(@areas.map {|area| [area.city, area.id]}, amb.cities.collect(&:id)), {:multiple =>  true, :prompt=>'select areas', 'data-placeholder' => "Cities...", :class => 'amb_areas', :id => "amb_area_#{amb.id}"} %>
+  </span>
+  <span class="remove_amb"><%= link_to 'X', ambassador_path(amb.id), :method => :delete, :class => 'github', :confirm => 'Are you sure?', :remote => true %></span>
+</div>

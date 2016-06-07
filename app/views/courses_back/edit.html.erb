@@ -1,0 +1,46 @@
+<div id="provider">
+  <h2><%= @provider.name -%></h2>
+  <p id="studios">
+    <% @provider.studios.each do |studio| -%>
+      <%= link_to studio.name, schedules_path(@city, @region_abbr, @provider, @studio), :class => ('current' if studio == @studio) -%>
+    <% end %>
+  </p>
+
+  <h3 id="schedule_name"><%= @studio.name -%> Schedule</h3>
+</div>
+
+<div id="steps" class="coursesSteps">
+  <h3>5 Quick Steps</h3>
+
+  <ul>
+    <li style="padding-top: 11px"><a href="#" data-step="2">When</a></li>
+    <li><a href="#" data-step="3">What</a></li>
+    <li><a href="#" data-step="4">Who</a></li>
+    <li><a href="#" data-step="5">Cost</a></li>
+    <li><a href="#" data-step="6">Done</a></li>
+  </ul>
+</div>
+
+<div id="course_form_container">
+  <h2>Edit Event</h2>
+
+  <div id="preview">
+    <div id="timing">
+      <p><strong>9:00am</strong> <span class="subtle">1 hour</span></p>
+    </div>
+
+    <div id="details">
+      <p><strong>Hatha Yoga</strong> <span class="subtle">Front Room (Warm)</span></p>
+    </div>
+
+    <div id="instructor">
+      <p><strong>Jane</strong> <span class="subtle"></span></p>
+    </div>
+
+    <p style="clear: left; margin: 0;"></p>
+  </div>
+
+  <div id="current_step">
+    <%= render_form_section 2 -%>
+  </div>
+</div>

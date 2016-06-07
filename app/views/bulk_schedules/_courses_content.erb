@@ -1,0 +1,67 @@
+<script>
+  $(function() {
+    $("#radio").buttonset();
+
+    shedule_initialize();
+    
+    $('.add_new_class').click(function(){
+      var week_day = $(this).attr('id').split('_')[3];
+      $('.new_class').html('');
+      $('#week_day').val(week_day);
+      $('#new_class_' + $(this).attr('id').split('_')[3]).append('<%= escape_javascript(render :partial => 'course_row', :locals => {:course => Course.new})%>');
+      $('#time_span_').focus();
+      return false;
+    })
+
+    $('#dialog').dialog({
+      bgiframe: true,
+      autoOpen: false,
+      modal: true,
+      width: 530
+    });
+    $('#new_room').dialog({
+      bgiframe: true,
+      autoOpen: false,
+      modal: true,
+      width: 400
+    });
+    $('.loader').hide();
+    $('#full_edit').dialog({
+      bgiframe: true,
+      autoOpen: false,
+      modal: true,
+      width: 800,
+      position: ['center', 50]
+    });
+  });
+</script>
+<div class="every_day">
+  <div class="classes">
+    <%= hidden_field_tag :week_day %>
+    <% @courses.each do |week_day, courses| %>
+      <h3 style="color: gray; font-weight: bold;">EVERY <%= day_of_week(week_day).upcase %> <%= link_to 'Add New Class', '#', :id => ('add_new_class_' + week_day.to_s), :class => 'add_new_class github'%></h3>
+      <% unless courses.blank? %>
+        <div class="header">
+          <div class="time_span">Start to end time</div>
+          <div class="classes_value">Class Name</div>
+          <div class="classes_value">Instructor</div>
+          <div class="classes_value">Room</div>
+        </div>
+        <div class="new_class" id="new_class_<%=week_day%>"></div>
+        <div id="courses_<%=week_day%>">
+          <% courses.sort_by { |c| c.start_time.to_i }.each do |course| %>
+            <div id="course_row_<%=course.id%>">
+              <%= render :partial => 'course_row', :locals => {:course => course}%>
+            </div>
+          <%end%>
+        </div>
+      <%else%>
+        <div id="courses_<%=week_day%>">
+          <div class="new_class" id="new_class_<%=week_day%>"><div class="no_classes">No <%= day_of_week week_day %> classes added yet..</div></div>
+        </div>
+      <%end%>
+    <%end%>
+  </div>
+</div>
+<div id="full_edit">
+</div>

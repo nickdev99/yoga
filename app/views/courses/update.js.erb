@@ -1,0 +1,3 @@
+$('#course_row_<%=@course.id%>').html('<%= escape_javascript(render :partial => 'bulk_schedules/course_row', :locals => {:course => @course}) %>');
+$('#full_edit').dialog('close');
+$('#loader_<%=@course.id%>').fadeOut(1600);

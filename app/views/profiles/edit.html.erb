@@ -1,0 +1,67 @@
+<script>
+  $(function(){
+   $("#areas").chosen();
+   $("#user_is_yoga_teacher").click(function() {
+     if($(this).attr('checked')){
+     $('.areas').show();
+   }else{
+     $('.areas').hide();
+   }
+   });
+  });
+</script>
+<div class="provider">
+  <h2>Profile Settings</h2>
+  <div class="profile_settings">
+    <%= form_for(:user, :url => profile_path(@user), :html => {:method => :put, :multipart => true}) do |f|%>
+      <p>Let people get a feel for you! Upload a personality-giving profile picture!</p>
+      <div class="photo">
+        <%= image_tag @user.avatar.url(:small) unless @user.avatar.path(:small).nil? %>
+        <%= f.file_field :avatar%>
+      </div>
+      <p><%= flash[:alert]%></p>
+      <div><span>Email: </span> <%= @user.email -%></div>
+      <div><span>First name</span> <%= f.text_field :first_name-%></div>
+      <div><span>Last name</span> <%= f.text_field :last_name-%></div>
+      <div><span>Username</span> <%= f.text_field :username-%></div>
+      <div><span>Sanskrit name</span> <%= f.text_field :sanskrit_name -%>(optional)</div>
+      <div><h3>Services You Offer</h3></div>
+      <%= fields_for :services do |s| %>
+        <div><%= s.check_box :private_classes, :checked => @services.include?('private_classes') -%><span>Private Yoga Classes</span></div>
+        <div><%= s.check_box :thai_massage, :checked => @services.include?('thai_massage') -%><span>Thai Yoga Massage</span></div>
+        <div><%= s.check_box :reiki, :checked => @services.include?('reiki') -%><span>Reiki</span></div>
+        <div><%= s.check_box :nutritionist, :checked => @services.include?('nutritionist') -%><span>Nutritionist</span></div>
+        <div><%= s.check_box :acupuncture, :checked => @services.include?('acupuncture') -%><span>Acupuncture</span></div>
+        <div><%= s.check_box :chiropractor, :checked => @services.include?('chiropractor') -%><span>Chiropractor</span></div>
+        <div><%= s.check_box :holistic_nutritionist, :checked => @services.include?('holistic_nutritionist') -%><span>Holistic Nutritionist</span></div>
+        <div><%= s.check_box :yoga_teacher_trainer, :checked => @services.include?('yoga_teacher_trainer') -%><span>Yoga Teacher Trainer</span></div>
+      <%end%>
+      <div><%= f.check_box :is_yoga_teacher -%><span>Yoga Teacher</span></div>
+      <div class="areas" style="display: <%= @user.is_yoga_teacher == true ? 'block;' : 'none;' %>"><%= select_tag(:areas, options_for_select(@areas.map {|area| [area.city, area.id]}, @selected_areas.collect(&:id)), {:style => "width: 350px;", :multiple =>  true, :prompt=>'select areas', 'data-placeholder' => "Cities I Teach in..."})%></div>
+
+      <p>
+        <strong>Privacy Setting</strong><br/>
+        Can we show your Last name? (Trust for the win!)
+      </p>
+      <p>
+        <%= f.radio_button :privacy_id, 0 %> It can be published<br/>
+        <%= f.radio_button :privacy_id, 1 %> Please only display the First character. Ex. Matt M.<br/>
+        <%= f.radio_button :privacy_id, 2 %> Keep my last name private (only show first name)
+      </p>
+      <p>
+        <strong>Studio Permissions</strong><br/>
+        <%unless @user.staff_member.blank?%>
+          <% @user.staff_member.roles.group_by(&:provider_id).each do |provider_id, permitions| %>
+            <%provider = Provider.find(provider_id)%>
+            <%= provider.name + '(All Studios) - ' + permitions.map {|perm| perm.name.humanize}.join(', ') %><br/>
+            <% provider.studios.each do |studio| %>
+              <%= studio.name + '(' + provider.name + ') - ' + permitions.map {|perm| perm.name.humanize}.join(', ') %>
+            <%end%>
+          <%end%>
+        <%end%>
+      </p>
+      <%= f.submit 'Save Changes' %>
+      <%= link_to 'Cancel & Close', dashboard_index_path(@city, @region_abbr) %>
+    <%end%>
+  </div>
+</div>
